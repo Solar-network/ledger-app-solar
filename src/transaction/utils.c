@@ -1,4 +1,10 @@
 /*****************************************************************************
+ *  This work is licensed under a Creative Commons Attribution-NoDerivatives
+ *  4.0 International License.
+ *
+ *  This software also incorporates work covered by the following copyright
+ *  and permission notice:
+ *
  *   Ledger App Boilerplate.
  *   (c) 2020 Ledger SAS.
  *
@@ -21,26 +27,13 @@
 
 #include "types.h"
 
-bool transaction_utils_check_encoding(const uint8_t *memo, uint64_t memo_len) {
-    for (uint64_t i = 0; i < memo_len; i++) {
-        if (memo[i] > 0x7F) {
+bool transaction_utils_check_ascii(const uint8_t *text, uint64_t text_len, bool allow_new_lines) {
+    for (uint64_t i = 0; i < text_len; i++) {
+        bool lf = text[i] == 0x0A;
+        bool crlf = text[i] == 0x0D && i + 1 < text_len && text[i + 1] == 0x0A;
+        if (!((allow_new_lines && (lf || crlf)) || (text[i] >= 0x20 && text[i] <= 0x7E))) {
             return false;
         }
     }
-
-    return true;
-}
-
-bool transaction_utils_format_memo(const uint8_t *memo,
-                                   uint64_t memo_len,
-                                   char *dst,
-                                   uint64_t dst_len) {
-    if (memo_len > MAX_MEMO_LEN || dst_len < memo_len + 1) {
-        return false;
-    }
-
-    memmove(dst, memo, memo_len);
-    dst[memo_len] = '\0';
-
     return true;
 }

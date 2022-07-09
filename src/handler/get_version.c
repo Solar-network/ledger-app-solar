@@ -1,4 +1,10 @@
 /*****************************************************************************
+ *  This work is licensed under a Creative Commons Attribution-NoDerivatives
+ *  4.0 International License.
+ *
+ *  This software also incorporates work covered by the following copyright
+ *  and permission notice:
+ *
  *   Ledger App Boilerplate.
  *   (c) 2020 Ledger SAS.
  *
@@ -20,7 +26,6 @@
 #include <assert.h>  // _Static_assert
 
 #include "get_version.h"
-#include "../globals.h"
 #include "../constants.h"
 #include "../io.h"
 #include "../sw.h"

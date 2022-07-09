@@ -1,4 +1,10 @@
 /*****************************************************************************
+ *  This work is licensed under a Creative Commons Attribution-NoDerivatives
+ *  4.0 International License.
+ *
+ *  This software also incorporates work covered by the following copyright
+ *  and permission notice:
+ *
  *   Ledger App Boilerplate.
  *   (c) 2020 Ledger SAS.
  *
@@ -25,20 +31,46 @@
 
 #include "address.h"
 
-#include "transaction/types.h"
+#include "constants.h"
+#include "common/base58.h"
 
-bool address_from_pubkey(const uint8_t public_key[static 64], uint8_t *out, size_t out_len) {
-    uint8_t address[32] = {0};
-    cx_sha3_t keccak256;
+bool address_from_pubkey(const uint8_t public_key[static 33],
+                         uint8_t *out,
+                         size_t out_len,
+                         uint8_t network) {
+    uint8_t address[ADDRESS_HASH_LEN] = {0};
+    cx_ripemd160_t ctx;
 
-    if (out_len < ADDRESS_LEN) {
+    if (out_len <= ADDRESS_HASH_LEN) {
         return false;
     }
 
-    cx_keccak_init(&keccak256, 256);
-    cx_hash((cx_hash_t *) &keccak256, CX_LAST, public_key, 64, address, sizeof(address));
+    cx_ripemd160_init(&ctx);
 
-    memmove(out, address + sizeof(address) - ADDRESS_LEN, ADDRESS_LEN);
+    cx_hash((cx_hash_t *) &ctx, CX_LAST, public_key, PUBLIC_KEY_LEN, address, ADDRESS_HASH_LEN);
+
+    memmove(out + 1, address, ADDRESS_HASH_LEN - 1);
+    out[0] = network;
 
     return true;
+}
+
+void crypto_get_checksum(const uint8_t *in, size_t in_len, uint8_t out[static 4]) {
+    uint8_t buffer[HASH_32_LEN];
+    cx_hash_sha256(in, in_len, buffer, HASH_32_LEN);
+    cx_hash_sha256(buffer, HASH_32_LEN, buffer, HASH_32_LEN);
+    memmove(out, buffer, 4);
+}
+
+int base58_encode_address(const uint8_t *in, size_t in_len, char *out, size_t out_len) {
+    uint8_t tmp[in_len + 4 + 1];  // version + max_in_len + checksum + null-byte
+
+    memcpy(tmp, in, in_len);
+    crypto_get_checksum(tmp, in_len, tmp + in_len);
+    size_t len = base58_encode(tmp, in_len + 4, out, out_len - 1);
+    if (len < 1) {
+        return -1;
+    }
+    out[len++] = '\0';
+    return len;
 }

@@ -1,64 +1,34 @@
-# Ledger Boilerplate Application
+# Solar Network Ledger App
 
-This is a boilerplate application which can be forked to start a new project for the Ledger Nano S/X.
+<p align="center">
+	<img src="./banner.png" />
+</p>
 
-## Prerequisite
+> The official [Solar Network](https://solar.org) App for Ledger Nano S/X/SPlus
 
-Be sure to have your environment correctly set up (see [Getting Started](https://developers.ledger.com/docs/nano-app/introduction/)) and [ledgerblue](https://pypi.org/project/ledgerblue/) and installed.
+## Development
 
-If you want to benefit from [vscode](https://code.visualstudio.com/) integration, it's recommended to move the toolchain in `/opt` and set `BOLOS_ENV` environment variable as follows
+Visit the [Ledger Developer Portal](https://developers.ledger.com/docs/nano-app/start-here) to learn more about Nano app development and the development environment, or skip to the following links for specific instructions on building and loading a Nano app:
 
-```
-BOLOS_ENV=/opt/bolos-devenv
-```
-
-and do the same with `BOLOS_SDK` environment variable
-
-```
-BOLOS_SDK=/opt/nanos-secure-sdk
-```
-
-## Compilation
-
-```
-make DEBUG=1  # compile optionally with PRINTF
-make load     # load the app on the Nano using ledgerblue
-```
+- [Build the application](https://developers.ledger.com/docs/nano-app/build)
+- [Load the application](https://developers.ledger.com/docs/nano-app/load)
 
 ## Documentation
 
-High level documentation such as [APDU](doc/APDU.md), [commands](doc/COMMANDS.md) and [transaction serialization](doc/TRANSACTION.md) are included in developer documentation which can be generated with [doxygen](https://www.doxygen.nl)
+The Solar App adheres to the specifications outlined in the [`doc/`](doc/) folder and is comprised of the following topics:
 
-```
-doxygen .doxygen/Doxyfile
-```
+- [APDU](doc/APDU.md) - A brief look at the communication protocol used by Ledger devices
+- [Commands](doc/COMMANDS.md) - An overview of commands supported by the Solar App
+- [Transaction Spec](doc/TRANSACTION.md) - A breakdown of Solar transactions and serialization--including all instructions supported by the Solar App and their associated flags and payload constructions
 
-the process outputs HTML and LaTeX documentations in `doc/html` and `doc/latex` folders.
+## Security
 
-## Tests & Continuous Integration
+If you discover a security vulnerability within any of these packages, please send an e-mail to security@solar.org. All security vulnerabilities will be promptly addressed.
 
-The flow processed in [GitHub Actions](https://github.com/features/actions) is the following:
+## Credits
 
-- Code formatting with [clang-format](http://clang.llvm.org/docs/ClangFormat.html)
-- Compilation of the application for Ledger Nano S in [ledger-app-builder](https://github.com/LedgerHQ/ledger-app-builder)
-- Unit tests of C functions with [cmocka](https://cmocka.org/) (see [unit-tests/](unit-tests/))
-- End-to-end tests with [Speculos](https://github.com/LedgerHQ/speculos) emulator (see [tests/](tests/))
-- Code coverage with [gcov](https://gcc.gnu.org/onlinedocs/gcc/Gcov.html)/[lcov](http://ltp.sourceforge.net/coverage/lcov.php) and upload to [codecov.io](https://about.codecov.io)
-- Documentation generation with [doxygen](https://www.doxygen.nl)
+This project exists thanks to all the people who [contribute](../../contributors).
 
-It outputs 4 artifacts:
+## License
 
-- `boilerplate-app-debug` within output files of the compilation process in debug mode
-- `speculos-log` within APDU command/response when executing end-to-end tests
-- `code-coverage` within HTML details of code coverage
-- `documentation` within HTML auto-generated documentation
-
-## Are you developing a Nano S, S Plus, X application?
-
-If so, This boilerplate will help you get started. 
-
-For a smooth and quick integration:
-- See the developers’ documentation on the [Developer Portal](https://developers.ledger.com/) and 
-- Go on Discord to chat with developper support and the developper community. See you there! If you are new to Ledger OP3N Discord server [click here](https://discord.gg/Ledger), otherwise directly join [the Nano App channel](https://discord.com/channels/885256081289379850/907623554542080070).
-
-
+Please read the separate [LICENSE](LICENSE) file for details.

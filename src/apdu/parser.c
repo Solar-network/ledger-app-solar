@@ -1,4 +1,10 @@
 /*****************************************************************************
+ *  This work is licensed under a Creative Commons Attribution-NoDerivatives
+ *  4.0 International License.
+ *
+ *  This software also incorporates work covered by the following copyright
+ *  and permission notice:
+ *
  *   Ledger App Boilerplate.
  *   (c) 2020 Ledger SAS.
  *
@@ -21,7 +27,7 @@
 
 #include "parser.h"
 #include "../types.h"
-#include "../offsets.h"
+#include "offsets.h"
 
 bool apdu_parser(command_t *cmd, uint8_t *buf, size_t buf_len) {
     // Check minimum length and Lc field of APDU command

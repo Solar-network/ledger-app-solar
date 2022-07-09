@@ -1,4 +1,10 @@
 /*****************************************************************************
+ *  This work is licensed under a Creative Commons Attribution-NoDerivatives
+ *  4.0 International License.
+ *
+ *  This software also incorporates work covered by the following copyright
+ *  and permission notice:
+ *
  *   Ledger App Boilerplate.
  *   (c) 2020 Ledger SAS.
  *
@@ -15,8 +21,7 @@
  *  limitations under the License.
  *****************************************************************************/
 
-#pragma GCC diagnostic ignored "-Wformat-invalid-specifier"  // snprintf
-#pragma GCC diagnostic ignored "-Wformat-extra-args"         // snprintf
+#include "display.h"
 
 #include <stdbool.h>  // bool
 #include <string.h>   // memset
@@ -25,38 +30,41 @@
 #include "ux.h"
 #include "glyphs.h"
 
-#include "display.h"
 #include "constants.h"
+#include "ctx.h"
 #include "../globals.h"
 #include "../io.h"
 #include "../sw.h"
-#include "../address.h"
 #include "action/validate.h"
 #include "../transaction/types.h"
 #include "../common/bip32.h"
+#include "../common/buffer.h"
 #include "../common/format.h"
+#include "../address.h"
+#include "transactions/multi_signature_registration_display.h"
+#include "transactions/ipfs_display.h"
+#include "transactions/transfer_display.h"
+#include "transactions/htlc_lock_display.h"
+#include "transactions/htlc_claim_display.h"
+#include "transactions/htlc_refund_display.h"
+#include "transactions/burn_display.h"
+#include "transactions/vote_display.h"
+
+ctx_t display_context = {0};
+
+enum e_state {
+    STATIC_SCREEN,
+    DYNAMIC_SCREEN,
+    MEMO_SCREEN,
+} current_state = STATIC_SCREEN;
 
 static action_validate_cb g_validate_callback;
-static char g_amount[30];
-static char g_bip32_path[60];
-static char g_address[43];
 
-// Step with icon and text
-UX_STEP_NOCB(ux_display_confirm_addr_step, pn, {&C_icon_eye, "Confirm Address"});
-// Step with title/text for BIP32 path
-UX_STEP_NOCB(ux_display_path_step,
-             bnnn_paging,
-             {
-                 .title = "Path",
-                 .text = g_bip32_path,
-             });
-// Step with title/text for address
-UX_STEP_NOCB(ux_display_address_step,
-             bnnn_paging,
-             {
-                 .title = "Address",
-                 .text = g_address,
-             });
+static char g_transaction_name[25];
+
+static char g_current_title[MAX_TITLE_LEN];
+static char g_current_text[MAX_TEXT_LEN];
+
 // Step with approve button
 UX_STEP_CB(ux_display_approve_step,
            pb,
@@ -74,15 +82,85 @@ UX_STEP_CB(ux_display_reject_step,
                "Reject",
            });
 
+// Display Transaction first step
+UX_STEP_NOCB(ux_display_review_step,
+             pnn,
+             {
+                 &C_icon_eye,
+                 "Review",
+                 g_transaction_name,
+             });
+
+/**
+ * PublicKey UX Components
+ *
+ */
+
+// initial step for publicKey confirmation.
+UX_STEP_NOCB(ux_display_confirm_public_key_step, pn, {&C_icon_eye, "Confirm Public Key"});
+
+// Step with title/text for public key
+UX_STEP_NOCB(ux_display_public_key_step,
+             bnnn_paging,
+             {
+                 .title = "Public Key",
+                 .text = g_current_text,
+             });
+
+// FLOW to display address and BIP32 path:
+// #1 screen: eye icon + "Confirm PublicKey"
+// #2 screen: display public key
+// #3 screen: approve button
+// #4 screen: reject button
+UX_FLOW(ux_display_pubkey_flow,
+        &ux_display_confirm_public_key_step,
+        &ux_display_public_key_step,
+        &ux_display_approve_step,
+        &ux_display_reject_step);
+
+int ui_display_public_key() {
+    if (G_context.req_type != CONFIRM_PUBLICKEY || G_context.state != STATE_NONE) {
+        G_context.state = STATE_NONE;
+        return io_send_sw(SW_BAD_STATE);
+    }
+
+    if (format_hex(G_context.pk_info.raw_public_key,
+                   PUBLIC_KEY_LEN,
+                   g_current_text,
+                   MAX_TEXT_LEN) == -1) {
+        return io_send_sw(SW_DISPLAY_PUBLICKEY_FAIL);
+    }
+
+    g_validate_callback = &ui_action_validate_pubkey;
+
+    ux_flow_init(0, ux_display_pubkey_flow, NULL);
+
+    return 0;
+}
+
+/**
+ * Address UX Components
+ *
+ */
+
+// initial step for address confirmation.
+UX_STEP_NOCB(ux_display_confirm_addr_step, pn, {&C_icon_eye, "Confirm Address"});
+
+// Step with title/text for address
+UX_STEP_NOCB(ux_display_address_step,
+             bnnn_paging,
+             {
+                 .title = "Address",
+                 .text = g_current_text,
+             });
+
 // FLOW to display address and BIP32 path:
 // #1 screen: eye icon + "Confirm Address"
-// #2 screen: display BIP32 Path
-// #3 screen: display address
-// #4 screen: approve button
-// #5 screen: reject button
-UX_FLOW(ux_display_pubkey_flow,
+// #2 screen: display address
+// #3 screen: approve button
+// #4 screen: reject button
+UX_FLOW(ux_display_address_flow,
         &ux_display_confirm_addr_step,
-        &ux_display_path_step,
         &ux_display_address_step,
         &ux_display_approve_step,
         &ux_display_reject_step);
@@ -93,54 +171,126 @@ int ui_display_address() {
         return io_send_sw(SW_BAD_STATE);
     }
 
-    memset(g_bip32_path, 0, sizeof(g_bip32_path));
-    if (!bip32_path_format(G_context.bip32_path,
-                           G_context.bip32_path_len,
-                           g_bip32_path,
-                           sizeof(g_bip32_path))) {
-        return io_send_sw(SW_DISPLAY_BIP32_PATH_FAIL);
-    }
+    memset(g_current_text, 0, MAX_TEXT_LEN);
+    uint8_t address[ADDRESS_HASH_LEN] = {0};
 
-    memset(g_address, 0, sizeof(g_address));
-    uint8_t address[ADDRESS_LEN] = {0};
-    if (!address_from_pubkey(G_context.pk_info.raw_public_key, address, sizeof(address))) {
+    if (!address_from_pubkey(G_context.pk_info.raw_public_key,
+                             address,
+                             ADDRESS_HASH_LEN + 1,
+                             G_context.network)) {
         return io_send_sw(SW_DISPLAY_ADDRESS_FAIL);
     }
-    snprintf(g_address, sizeof(g_address), "0x%.*H", sizeof(address), address);
 
-    g_validate_callback = &ui_action_validate_pubkey;
+    base58_encode_address(address, ADDRESS_HASH_LEN, g_current_text, MAX_TEXT_LEN);
 
-    ux_flow_init(0, ux_display_pubkey_flow, NULL);
+    g_validate_callback = &ui_action_validate_address;
+
+    ux_flow_init(0, ux_display_address_flow, NULL);
 
     return 0;
 }
 
-// Step with icon and text
-UX_STEP_NOCB(ux_display_review_step,
-             pnn,
-             {
-                 &C_icon_eye,
-                 "Review",
-                 "Transaction",
-             });
-// Step with title/text for amount
-UX_STEP_NOCB(ux_display_amount_step,
+void bnnn_paging_edgecase() {
+    G_ux.flow_stack[G_ux.stack_count - 1].prev_index =
+        G_ux.flow_stack[G_ux.stack_count - 1].index - 2;
+    G_ux.flow_stack[G_ux.stack_count - 1].index--;
+    ux_flow_relayout();
+}
+
+// Function to handle Dynamic Screen
+// Three states: STATIC, DYNAMIC and MEMO
+void display_next_state(bool is_upper_delimiter) {
+    if (is_upper_delimiter) {
+        if (current_state == STATIC_SCREEN) {
+            if (context_get_next(&display_context,
+                                 &G_context.tx_info.transaction,
+                                 g_current_title,
+                                 g_current_text)) {
+                current_state = DYNAMIC_SCREEN;
+            }
+
+            ux_flow_next();
+        } else {
+            if (context_get_previous(&display_context,
+                                     &G_context.tx_info.transaction,
+                                     g_current_title,
+                                     g_current_text)) {
+                current_state = DYNAMIC_SCREEN;
+                ux_flow_next();
+            } else {
+                current_state = STATIC_SCREEN;
+                ux_flow_prev();
+            }
+        }
+    } else {
+        if (current_state == STATIC_SCREEN) {
+            if (G_context.tx_info.transaction.memo_len > 0) {
+                snprintf(g_current_title, sizeof(g_current_title), "%s", "Memo");
+                snprintf(g_current_text,
+                         sizeof(g_current_text),
+                         "%.*s",
+                         G_context.tx_info.transaction.memo_len,
+                         G_context.tx_info.transaction.memo);
+                current_state = MEMO_SCREEN;
+            } else if (context_get_previous(&display_context,
+                                            &G_context.tx_info.transaction,
+                                            g_current_title,
+                                            g_current_text)) {
+                current_state = DYNAMIC_SCREEN;
+            }
+
+            bnnn_paging_edgecase();
+        } else if (current_state == DYNAMIC_SCREEN) {
+            if (context_get_next(&display_context,
+                                 &G_context.tx_info.transaction,
+                                 g_current_title,
+                                 g_current_text)) {
+                bnnn_paging_edgecase();
+            } else if (G_context.tx_info.transaction.memo_len > 0) {
+                snprintf(g_current_title, sizeof(g_current_title), "%s", "Memo");
+                snprintf(g_current_text,
+                         sizeof(g_current_text),
+                         "%.*s",
+                         G_context.tx_info.transaction.memo_len,
+                         G_context.tx_info.transaction.memo);
+                current_state = MEMO_SCREEN;
+                bnnn_paging_edgecase();
+            } else {
+                current_state = STATIC_SCREEN;
+                ux_flow_next();
+            }
+        } else {
+            current_state = STATIC_SCREEN;
+            ux_flow_next();
+        }
+    }
+}
+
+// Upper delimeter step
+UX_STEP_INIT(step_upper_delimiter, NULL, NULL, { display_next_state(true); });
+
+// general dynamic step
+UX_STEP_NOCB(ux_display_general,
              bnnn_paging,
              {
-                 .title = "Amount",
-                 .text = g_amount,
+                 .title = g_current_title,
+                 .text = g_current_text,
              });
 
-// FLOW to display transaction information:
-// #1 screen : eye icon + "Review Transaction"
-// #2 screen : display amount
-// #3 screen : display destination address
-// #4 screen : approve button
-// #5 screen : reject button
+// Lower delimeter step
+UX_STEP_INIT(step_lower_delimiter, NULL, NULL, { display_next_state(false); });
+
+// FLOW to display transaction:
+// #1 screen: eye icon + "Confirm" + transaction type
+// #x screen: Dynamic Screen
+// #n-2 screen: memo (if present)
+// #n-1 screen: approve button
+// #n screen: reject button
 UX_FLOW(ux_display_transaction_flow,
         &ux_display_review_step,
-        &ux_display_address_step,
-        &ux_display_amount_step,
+        &step_upper_delimiter,
+        &ux_display_general,
+        &step_lower_delimiter,
         &ux_display_approve_step,
         &ux_display_reject_step);
 
@@ -150,23 +300,110 @@ int ui_display_transaction() {
         return io_send_sw(SW_BAD_STATE);
     }
 
-    memset(g_amount, 0, sizeof(g_amount));
-    char amount[30] = {0};
-    if (!format_fpu64(amount,
-                      sizeof(amount),
-                      G_context.tx_info.transaction.value,
-                      EXPONENT_SMALLEST_UNIT)) {
-        return io_send_sw(SW_DISPLAY_AMOUNT_FAIL);
-    }
-    snprintf(g_amount, sizeof(g_amount), "BOL %.*s", sizeof(amount), amount);
-    PRINTF("Amount: %s\n", g_amount);
+    display_context.offset = 0;
 
-    memset(g_address, 0, sizeof(g_address));
-    snprintf(g_address, sizeof(g_address), "0x%.*H", ADDRESS_LEN, G_context.tx_info.transaction.to);
+    if (G_context.tx_info.transaction.typeGroup == TYPEGROUP_SOLAR) {
+        switch (G_context.tx_info.transaction.type) {
+            case BURN: {
+                snprintf(g_transaction_name, sizeof(g_transaction_name), "%s", "Burn");
+
+                display_context.f = &burn_type_display;
+                break;
+            }
+            case VOTE: {
+                snprintf(
+                    g_transaction_name,
+                    sizeof(g_transaction_name),
+                    "%s%s",
+                    G_context.tx_info.transaction.core_asset.Vote.vote_length == 0 ? "Cancel " : "",
+                    "Vote");
+
+                display_context.f = &vote_type_display;
+                break;
+            }
+            default:
+                return io_send_sw(SW_TX_PARSING_FAIL);
+        }
+    } else {
+        switch (G_context.tx_info.transaction.type) {
+            case MULTISIGNATURE_REGISTRATION: {
+                snprintf(g_transaction_name, sizeof(g_transaction_name), "%s", "Multisignature");
+
+                display_context.f = &multisignature_type_display;
+                break;
+            }
+            case IPFS: {
+                // First screen
+                snprintf(g_transaction_name, sizeof(g_transaction_name), "%s", "IPFS");
+
+                display_context.f = &ipfs_type_display;
+                break;
+            }
+            case TRANSFER: {
+                snprintf(g_transaction_name, sizeof(g_transaction_name), "%s", "Transfer");
+
+                display_context.f = &transfer_type_display;
+                break;
+            }
+            case HTLC_LOCK: {
+                // First screen
+                snprintf(g_transaction_name, sizeof(g_transaction_name), "%s", "HTLC Lock");
+
+                display_context.f = &htlc_lock_type_display;
+                break;
+            }
+            case HTLC_CLAIM: {
+                // First screen
+                snprintf(g_transaction_name, sizeof(g_transaction_name), "%s", "HTLC Claim");
+
+                display_context.f = &htlc_claim_type_display;
+                break;
+            }
+            case HTLC_REFUND: {
+                // First screen
+                snprintf(g_transaction_name, sizeof(g_transaction_name), "%s", "HTLC Refund");
+
+                display_context.f = &htlc_refund_type_display;
+                break;
+            }
+            default:
+                return io_send_sw(SW_TX_PARSING_FAIL);
+        }
+    }
 
     g_validate_callback = &ui_action_validate_transaction;
 
     ux_flow_init(0, ux_display_transaction_flow, NULL);
+
+    return 0;
+}
+
+// display message
+UX_STEP_NOCB(ux_display_message,
+             bnnn_paging,
+             {
+                 .title = "Message",
+                 .text = (const char *) &G_context.tx_info.raw_tx + 2,
+             });
+
+UX_FLOW(ux_display_message_flow,
+        &ux_display_review_step,
+        &ux_display_message,
+        &ux_display_approve_step,
+        &ux_display_reject_step);
+
+int ui_display_message() {
+    if (G_context.req_type != CONFIRM_MESSAGE || G_context.state != STATE_PARSED) {
+        G_context.state = STATE_NONE;
+        return io_send_sw(SW_BAD_STATE);
+    }
+
+    // First screen
+    snprintf(g_transaction_name, sizeof(g_transaction_name), "%s", "Message");
+
+    g_validate_callback = &ui_action_validate_transaction;
+
+    ux_flow_init(0, ux_display_message_flow, NULL);
 
     return 0;
 }

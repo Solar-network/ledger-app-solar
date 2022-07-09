@@ -7,13 +7,9 @@ dep/
 obj/
 
 # Unit tests and code coverage
-unit-tests/build/
-unit-tests/coverage/
-unit-tests/coverage.info
-
-# Fuzzing
-fuzzing/build/
-
+tests/unit-tests/build/
+tests/unit-tests/coverage/
+tests/unit-tests/coverage.info
 
 # Editors
 .idea/
@@ -29,3 +25,6 @@ __pycache__/
 # Doxygen
 doc/html
 doc/latex
+
+dep/
+.vscode/settings.json

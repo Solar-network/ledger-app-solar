@@ -1,4 +1,10 @@
 /*****************************************************************************
+ *  This work is licensed under a Creative Commons Attribution-NoDerivatives
+ *  4.0 International License.
+ *
+ *  This software also incorporates work covered by the following copyright
+ *  and permission notice:
+ *
  *   Ledger App Boilerplate.
  *   (c) 2020 Ledger SAS.
  *
@@ -22,6 +28,7 @@
 
 #include "io.h"
 #include "globals.h"
+#include "context.h"
 #include "sw.h"
 #include "common/buffer.h"
 #include "common/write.h"
@@ -138,6 +145,10 @@ int io_send_response(const buffer_t *rdata, uint16_t sw) {
             G_output_len = 0;
             G_io_state = READY;
             break;
+    }
+
+    if (sw != 0x9000) {
+        reset_app_context();
     }
 
     return ret;

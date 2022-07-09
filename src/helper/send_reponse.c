@@ -1,4 +1,10 @@
 /*****************************************************************************
+ *  This work is licensed under a Creative Commons Attribution-NoDerivatives
+ *  4.0 International License.
+ *
+ *  This software also incorporates work covered by the following copyright
+ *  and permission notice:
+ *
  *   Ledger App Boilerplate.
  *   (c) 2020 Ledger SAS.
  *
@@ -22,32 +28,62 @@
 #include "send_response.h"
 #include "../constants.h"
 #include "../globals.h"
+#include "../context.h"
 #include "../sw.h"
 #include "common/buffer.h"
+#include "../address.h"
 
 int helper_send_response_pubkey() {
-    uint8_t resp[1 + 1 + PUBKEY_LEN + 1 + CHAINCODE_LEN] = {0};
+    uint8_t resp[1 + PUBLIC_KEY_LEN + 1 + CHAINCODE_LEN] = {0};
     size_t offset = 0;
 
-    resp[offset++] = PUBKEY_LEN + 1;
-    resp[offset++] = 0x04;
-    memmove(resp + offset, G_context.pk_info.raw_public_key, PUBKEY_LEN);
-    offset += PUBKEY_LEN;
-    resp[offset++] = CHAINCODE_LEN;
-    memmove(resp + offset, G_context.pk_info.chain_code, CHAINCODE_LEN);
-    offset += CHAINCODE_LEN;
+    resp[offset++] = PUBLIC_KEY_LEN;
+    memmove(resp + offset, G_context.pk_info.raw_public_key, PUBLIC_KEY_LEN);
+    offset += PUBLIC_KEY_LEN;
+
+    if (G_context.pk_info.use_chaincode) {
+        resp[offset++] = CHAINCODE_LEN;
+        memmove(resp + offset, G_context.pk_info.chain_code, CHAINCODE_LEN);
+        offset += CHAINCODE_LEN;
+    }
+
+    reset_app_context();
+
+    return io_send_response(&(const buffer_t){.ptr = resp, .size = offset, .offset = 0}, SW_OK);
+}
+
+int helper_send_response_address() {
+    uint8_t pubkey_hash[ADDRESS_HASH_LEN] = {0};
+    char address[ADDRESS_LEN + 1] = {0};
+
+    uint8_t resp[1 + ADDRESS_LEN] = {0};
+    size_t offset = 0;
+
+    resp[offset++] = ADDRESS_LEN;
+    if (!address_from_pubkey(G_context.pk_info.raw_public_key,
+                             pubkey_hash,
+                             ADDRESS_HASH_LEN + 1,
+                             G_context.network)) {
+        return io_send_sw(SW_ENCODE_ADDRESS_FAIL);
+    }
+
+    if (base58_encode_address(pubkey_hash, ADDRESS_HASH_LEN, address, ADDRESS_LEN + 1) < 0) {
+        return io_send_sw(SW_ENCODE_ADDRESS_FAIL);
+    }
+
+    memmove(resp + offset, address, ADDRESS_LEN);
+    offset += ADDRESS_LEN;
+
+    reset_app_context();
 
     return io_send_response(&(const buffer_t){.ptr = resp, .size = offset, .offset = 0}, SW_OK);
 }
 
 int helper_send_response_sig() {
-    uint8_t resp[1 + MAX_DER_SIG_LEN + 1] = {0};
-    size_t offset = 0;
+    uint8_t resp[SIG_SCHNORR_LEN] = {0};
 
-    resp[offset++] = G_context.tx_info.signature_len;
-    memmove(resp + offset, G_context.tx_info.signature, G_context.tx_info.signature_len);
-    offset += G_context.tx_info.signature_len;
-    resp[offset++] = (uint8_t) G_context.tx_info.v;
+    memmove(resp, G_context.tx_info.signature, SIG_SCHNORR_LEN);
 
-    return io_send_response(&(const buffer_t){.ptr = resp, .size = offset, .offset = 0}, SW_OK);
+    return io_send_response(&(const buffer_t){.ptr = resp, .size = SIG_SCHNORR_LEN, .offset = 0},
+                            SW_OK);
 }

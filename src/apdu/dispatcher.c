@@ -1,4 +1,10 @@
 /*****************************************************************************
+ *  This work is licensed under a Creative Commons Attribution-NoDerivatives
+ *  4.0 International License.
+ *
+ *  This software also incorporates work covered by the following copyright
+ *  and permission notice:
+ *
  *   Ledger App Boilerplate.
  *   (c) 2020 Ledger SAS.
  *
@@ -20,7 +26,6 @@
 
 #include "dispatcher.h"
 #include "../constants.h"
-#include "../globals.h"
 #include "../types.h"
 #include "../io.h"
 #include "../sw.h"
@@ -28,6 +33,7 @@
 #include "../handler/get_version.h"
 #include "../handler/get_app_name.h"
 #include "../handler/get_public_key.h"
+#include "../handler/get_address.h"
 #include "../handler/sign_tx.h"
 
 int apdu_dispatcher(const command_t *cmd) {
@@ -44,14 +50,22 @@ int apdu_dispatcher(const command_t *cmd) {
             }
 
             return handler_get_version();
+
         case GET_APP_NAME:
             if (cmd->p1 != 0 || cmd->p2 != 0) {
                 return io_send_sw(SW_WRONG_P1P2);
             }
 
             return handler_get_app_name();
+
         case GET_PUBLIC_KEY:
-            if (cmd->p1 > 1 || cmd->p2 > 0) {
+            // P1:
+            // - 0x00: No user approval
+            // - 0x01: User approval
+            // P2:
+            // - 0x00: Don't request chain code
+            // - 0x01: Request chain code
+            if (cmd->p1 > 1 || cmd->p2 > 1) {
                 return io_send_sw(SW_WRONG_P1P2);
             }
 
@@ -63,10 +77,33 @@ int apdu_dispatcher(const command_t *cmd) {
             buf.size = cmd->lc;
             buf.offset = 0;
 
-            return handler_get_public_key(&buf, (bool) cmd->p1);
+            return handler_get_public_key(&buf, cmd->p1, cmd->p2);
+
+        case GET_ADDRESS:
+            // P1:
+            // - 0x00: No user approval
+            // - 0x01: User approval
+            // P2:
+            // - 0x3F (60): Solar Mainnet
+            // - 0x1E (30): Solar Testnet
+            if (cmd->p1 > 1 ||
+                (cmd->p2 != NETWORK_SOLAR_MAINNET && cmd->p2 != NETWORK_SOLAR_TESTNET)) {
+                return io_send_sw(SW_WRONG_P1P2);
+            }
+
+            if (!cmd->data) {
+                return io_send_sw(SW_WRONG_DATA_LENGTH);
+            }
+
+            buf.ptr = cmd->data;
+            buf.size = cmd->lc;
+            buf.offset = 0;
+
+            return handler_get_address(&buf, cmd->p1 == 1, cmd->p2);
+
+        case SIGN_MESSAGE:
         case SIGN_TX:
-            if ((cmd->p1 == P1_START && cmd->p2 != P2_MORE) ||  //
-                cmd->p1 > P1_MAX ||                             //
+            if ((cmd->p1 == P1_START && cmd->p2 != P2_MORE) || cmd->p1 > P1_MAX ||
                 (cmd->p2 != P2_LAST && cmd->p2 != P2_MORE)) {
                 return io_send_sw(SW_WRONG_P1P2);
             }
@@ -79,7 +116,8 @@ int apdu_dispatcher(const command_t *cmd) {
             buf.size = cmd->lc;
             buf.offset = 0;
 
-            return handler_sign_tx(&buf, cmd->p1, (bool) (cmd->p2 & P2_MORE));
+            return handler_sign_tx(&buf, cmd->p1, cmd->p2, cmd->ins == SIGN_MESSAGE);
+
         default:
             return io_send_sw(SW_INS_NOT_SUPPORTED);
     }

@@ -1,0 +1,4 @@
+speculos
+pytest>=6.1.1,<7.0.0
+btclib
+ledgercomm[hid]

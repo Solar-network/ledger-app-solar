@@ -11,18 +11,18 @@ Status words tend to be similar to common [APDU responses](https://www.eftlab.co
 
 ## Command APDU
 
-| Field name | Length (bytes) | Description |
-| --- | --- | --- |
-| CLA | 1 | Instruction class - indicates the type of command |
-| INS | 1 | Instruction code - indicates the specific command |
-| P1 | 1 | Instruction parameter 1 for the command |
-| P2 | 1 | Instruction parameter 2 for the command |
-| Lc | 1 | The number of bytes of command data to follow (a value from 0 to 255) |
-| CData | var | Command data with `Lc` bytes |
+| Field | Length (bytes) | Description                                                           |
+| ----- | :------------: | --------------------------------------------------------------------- |
+| CLA   |       1        | Instruction class - indicates the type of command                     |
+| INS   |       1        | Instruction code - indicates the specific command                     |
+| P1    |       1        | Instruction parameter 1 for the command                               |
+| P2    |       1        | Instruction parameter 2 for the command                               |
+| Lc    |       1        | The number of bytes of command data to follow (a value from 0 to 255) |
+| CData |    variable    | Command data with `Lc` bytes                                          |
 
 ## Response APDU
 
-| Field name | Length (bytes) | Description |
-| --- | --- | --- |
-| RData | var | Reponse data (can be empty) |
-| SW | 2 | Status word containing command processing status (e.g. `0x9000` for success) |
+| Field | Length (bytes) | Description                                                                   |
+| ----- | :------------: | ----------------------------------------------------------------------------- |
+| RData |    variable    | Reponse data (can be empty)                                                   |
+| SW    |       2        | Status word containing command processing status (e.g., `0x9000` for success) |

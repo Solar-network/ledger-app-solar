@@ -1,4 +1,10 @@
 /*****************************************************************************
+ *  This work is licensed under a Creative Commons Attribution-NoDerivatives
+ *  4.0 International License.
+ *
+ *  This software also incorporates work covered by the following copyright
+ *  and permission notice:
+ *
  *   Ledger App Boilerplate.
  *   (c) 2020 Ledger SAS.
  *
@@ -26,17 +32,21 @@
 #include "sign_tx.h"
 #include "../sw.h"
 #include "../globals.h"
-#include "../crypto.h"
+#include "../context.h"
+#include "../crypto/crypto.h"
 #include "../ui/display.h"
 #include "../common/buffer.h"
 #include "../transaction/types.h"
-#include "../transaction/deserialize.h"
+#include "../transaction/deserialise.h"
 
-int handler_sign_tx(buffer_t *cdata, uint8_t chunk, bool more) {
+int handler_sign_tx(buffer_t *cdata, uint8_t chunk, bool more, bool is_message) {
     if (chunk == 0) {  // first APDU, parse BIP32 path
-        explicit_bzero(&G_context, sizeof(G_context));
-        G_context.req_type = CONFIRM_TRANSACTION;
-        G_context.state = STATE_NONE;
+        reset_app_context();
+        if (is_message) {
+            G_context.req_type = CONFIRM_MESSAGE;
+        } else {
+            G_context.req_type = CONFIRM_TRANSACTION;
+        }
 
         if (!buffer_read_u8(cdata, &G_context.bip32_path_len) ||
             !buffer_read_bip32_path(cdata,
@@ -47,12 +57,22 @@ int handler_sign_tx(buffer_t *cdata, uint8_t chunk, bool more) {
 
         return io_send_sw(SW_OK);
     } else {  // parse transaction
-        if (G_context.req_type != CONFIRM_TRANSACTION) {
+        if (!is_message && G_context.req_type != CONFIRM_TRANSACTION) {
+            return io_send_sw(SW_BAD_STATE);
+        }
+        if (is_message && G_context.req_type != CONFIRM_MESSAGE) {
             return io_send_sw(SW_BAD_STATE);
         }
 
+        if (G_context.req_num + 1 != chunk) {
+            return io_send_sw(SW_OUT_OF_ORDER_REQ);
+        }
+
+        G_context.req_num++;
+
         if (more) {  // more APDUs with transaction part
-            if (G_context.tx_info.raw_tx_len + cdata->size > MAX_TRANSACTION_LEN &&  //
+            if (G_context.tx_info.raw_tx_len + cdata->size > MAX_TRANSACTION_LEN ||  //
+                cdata->size < UINT8_MAX ||                                           //
                 !buffer_move(cdata,
                              G_context.tx_info.raw_tx + G_context.tx_info.raw_tx_len,
                              cdata->size)) {
@@ -76,7 +96,12 @@ int handler_sign_tx(buffer_t *cdata, uint8_t chunk, bool more) {
                             .size = G_context.tx_info.raw_tx_len,
                             .offset = 0};
 
-            parser_status_e status = transaction_deserialize(&buf, &G_context.tx_info.transaction);
+            parser_status_e status;
+            if (G_context.req_type == CONFIRM_TRANSACTION) {
+                status = transaction_deserialise(&buf, &G_context.tx_info.transaction);
+            } else {
+                status = message_deserialise(&buf, &G_context.tx_info.transaction);
+            }
             PRINTF("Parsing status: %d.\n", status);
             if (status != PARSING_OK) {
                 return io_send_sw(SW_TX_PARSING_FAIL);
@@ -84,18 +109,23 @@ int handler_sign_tx(buffer_t *cdata, uint8_t chunk, bool more) {
 
             G_context.state = STATE_PARSED;
 
-            cx_sha3_t keccak256;
-            cx_keccak_init(&keccak256, 256);
-            cx_hash((cx_hash_t *) &keccak256,
+            cx_sha256_t sha256;
+            cx_sha256_init(&sha256);
+            cx_hash(&sha256.header,
                     CX_LAST,
-                    G_context.tx_info.raw_tx,
-                    G_context.tx_info.raw_tx_len,
+                    (G_context.req_type == CONFIRM_MESSAGE) ? G_context.tx_info.raw_tx + 2
+                                                            : G_context.tx_info.raw_tx,
+                    (G_context.req_type == CONFIRM_MESSAGE) ? G_context.tx_info.raw_tx_len - 2
+                                                            : G_context.tx_info.raw_tx_len,
                     G_context.tx_info.m_hash,
                     sizeof(G_context.tx_info.m_hash));
 
             PRINTF("Hash: %.*H\n", sizeof(G_context.tx_info.m_hash), G_context.tx_info.m_hash);
 
-            return ui_display_transaction();
+            if (G_context.req_type == CONFIRM_TRANSACTION) {
+                return ui_display_transaction();
+            }
+            return ui_display_message();
         }
     }
 

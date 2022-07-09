@@ -1,4 +1,10 @@
 # ****************************************************************************
+#   This work is licensed under a Creative Commons Attribution-NoDerivatives
+#   4.0 International License.
+#
+#   This software also incorporates work covered by the following copyright
+#   and permission notice:
+#
 #    Ledger App Boilerplate
 #    (c) 2020 Ledger SAS.
 #
@@ -27,19 +33,20 @@ APP_LOAD_PARAMS=--appFlags 0x200  # APPLICATION_FLAG_BOLOS_SETTINGS
 else
 APP_LOAD_PARAMS=--appFlags 0x000
 endif
-APP_LOAD_PARAMS += --path "44'"
+APP_LOAD_PARAMS += --path "44'/3333'"
+APP_LOAD_PARAMS += --path "44'/1'"
 APP_LOAD_PARAMS += $(COMMON_LOAD_PARAMS)
 
-APPNAME      = "Boilerplate"
+APPNAME      = "Solar"
 APPVERSION_M = 1
 APPVERSION_N = 0
-APPVERSION_P = 1
+APPVERSION_P = 0
 APPVERSION   = "$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)"
 
 ifeq ($(TARGET_NAME),TARGET_NANOS)
-    ICONNAME=icons/nanos_app_boilerplate.gif
+    ICONNAME=icons/nanos_app_solar.gif
 else
-    ICONNAME=icons/nanox_app_boilerplate.gif
+    ICONNAME=icons/nanox_app_solar.gif
 endif
 
 all: default
@@ -55,14 +62,17 @@ DEFINES += USB_SEGMENT_SIZE=64
 DEFINES += BLE_SEGMENT_SIZE=32
 DEFINES += HAVE_WEBUSB WEBUSB_URL_SIZE_B=0 WEBUSB_URL=""
 DEFINES += UNUSED\(x\)=\(void\)x
+DEFINES += NANO_PXLS_PER_LINE=114
 
 ifeq ($(TARGET_NAME),TARGET_NANOX)
     DEFINES += HAVE_BLE BLE_COMMAND_TIMEOUT_MS=2000 HAVE_BLE_APDU
 endif
 
 ifeq ($(TARGET_NAME),TARGET_NANOS)
+    DEFINES += IS_NANOS=1
     DEFINES += IO_SEPROXYHAL_BUFFER_SIZE_B=128
 else
+    DEFINES += IS_NANOS=0
     DEFINES += IO_SEPROXYHAL_BUFFER_SIZE_B=300
     DEFINES += HAVE_GLO096
     DEFINES += BAGL_WIDTH=128 BAGL_HEIGHT=64
@@ -128,4 +138,4 @@ include $(BOLOS_SDK)/Makefile.rules
 dep/%.d: %.c Makefile
 
 listvariants:
-	@echo VARIANTS COIN BOL
+	@echo VARIANTS COIN SOL

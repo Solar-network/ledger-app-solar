@@ -1,4 +1,10 @@
 /*****************************************************************************
+ *  This work is licensed under a Creative Commons Attribution-NoDerivatives
+ *  4.0 International License.
+ *
+ *  This software also incorporates work covered by the following copyright
+ *  and permission notice:
+ *
  *   Ledger App Boilerplate.
  *   (c) 2020 Ledger SAS.
  *
@@ -19,7 +25,6 @@
 
 #include "get_app_name.h"
 #include "../constants.h"
-#include "../globals.h"
 #include "../io.h"
 #include "../sw.h"
 #include "../types.h"

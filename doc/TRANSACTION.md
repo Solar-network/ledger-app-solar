@@ -1,56 +1,75 @@
-# BOLOK Transaction Serialization
+# Solar Transactions
 
 ## Overview
 
-The custom transaction serialization presented is for the purely fictitious BOLOK *chain* which has been inspired by other popular blockchain (see [Links](#links)).
+[The Solar Network](https://github.com/Solar-network/core) serialises transactions into raw byte streams which are then digested via SHA256 to produce a signing message hash. In the case of the Solar Ledger App, serialised transactions are first sent via APDU as the `CData`, then deserialised for validation and user approval before construction and signing of the message hash. The sections below provide a brief overview of how transactions and their associated values are constructed; for more in-depth information, please visit [Solar's Documentation](https://docs.solar.org).
 
 ## Amount units
 
-The base unit in BOLOK *chain* is the BOL and the smallest unit used in raw transaction is the *bolino* or mBOL: 1 BOL = 1000 mBOL.
+The Solar Network currency is the SXP token which has a precision of 8 decimals. Solar transactions make use of raw currency values obtained by multiplying the SXP amount by `10^8` as exampled in the table below:
+
+|                                                                                                                       Unit                                                                                                                        |
+| :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| <table><tr> <th>SXP</th> <th>10^8</th> </tr><tr> <td>`1`</td> <td>`100000000`</td> </tr><tr> <td>`25`</td> <td>`2500000000`</td> </tr><tr> <td>`50`</td> <td>`50000000000`</td> </tr><tr> <td>`10000`</td> <td>`1000000000000`</td> </tr></table> |
+
+> `1 SXP => 1.00000000 SXP => 100000000` for raw transactions.
 
 ## Address format
 
-BOLOK addresses are hexadecimal numbers, identifiers derived from the last 20 bytes of the Keccak-256 hash of the public key.
+Solar addresses are [Base58Check](https://en.bitcoin.it/wiki/Base58Check_encoding) encodings of a [RIPEMD-160](https://en.bitcoin.it/wiki/RIPEMD-160) hash of a Solar PublicKey prepended by a network/version byte.
 
-## Structure
+### Networks
 
-### Transaction
+The network/version byte is used to set the leading character of the address and helps to both visually identify and ensure the correct network is being used.
 
-| Field | Size (bytes) | Description |
-| --- | :---: | --- |
-| `nonce` | 8 | A sequence number used to prevent message replay |
-| `to` | 20 | The destination address |
-| `value` | 8 | The amount in mBOL to send to the destination address |
-| `memo_len` | 1-9 | length of the memo as [varint](#variablelenghtinteger) |
-| `memo` | var | A text ASCII-encoded of length `memo_len` to show your love |
-| `v` | 1 | 0x01 if y-coordinate of R is odd, 0x00 otherwise |
-| `r` | 32 | x-coordinate of R in ECDSA signature |
-| `s` | 32 | x-coordinate of S in ECDSA signature |
+| Network | Dec  |  Hex   | Prefix | Address                              |
+| :-----: | :--: | :----: | :----: | ------------------------------------ |
+| Mainnet | `63` | `0x3F` |  `S`   | `SNAgA2XCRZDKfm5Vu9h4KR1bZw5xn9EiC3` |
+| Testnet | `30` | `0x1E` |  `D`   | `D61mfSggzbvQgTUe6JhYKH2doHaqJ3Dyib` |
 
-### Variable length integer (varint)
+### Example Construction
 
-Integer can be encoded depending on the represented value to save space.
-Variable length integers always precede an array of a type of data that may vary in length.
-Longer numbers are encoded in little endian.
+<div align="center">
 
-| Value | Storage length (bytes) | Format |
-| --- | :---: | --- |
-| < 0xFD | 1 | uint8_t |
-| <= 0xFFFF | 3 | 0xFD followed by the length as uint16_t |
-| <= 0xFFFF FFFF | 5 | 0xFE followed by the length as uint32_t |
-| - | 9 | 0xFF followed by the length as uint64_t |
+|                              PublicKey                               |
+| :------------------------------------------------------------------: |
+| `034151a3ec46b5670a682b0a63394f863587d1bc97483b1b6c70eb58e7f0aed192` |
+
+|            RIPEMD160(PublicKey)            |
+| :----------------------------------------: |
+| `0995750207ecaf0ccf251c1265b92ad84f553662` |
+
+|    Base58Check(`0x3F`, RIPEMD160)    |    Base58Check(`0x1E`, RIPEMD160)    |
+| :----------------------------------: | :----------------------------------: |
+| `SNAgA2XCRZDKfm5Vu9h4KR1bZw5xn9EiC3` | `D61mfSggzbvQgTUe6JhYKH2doHaqJ3Dyib` |
+
+</div>
+
+## Transaction Structures
+
+- TypeGroup 1
+  - [Type 4: MultiSignature Registration](./transactions/TG01_T04_MULTISIGNATURE_REG.md)
+  - [Type 5: IPFS](./transactions/TG01_T05_IPFS.md)
+  - [Type 6: Transfer](./transactions/TG01_T06_TRANSFER.md)
+  - [Type 8: HTLC Lock](./transactions/TG01_T08_HTLC_LOCK.md)
+  - [Type 9: HTLC Claim](./transactions/TG01_T09_HTLC_CLAIM.md)
+  - [Type 10: HTLC Refund](./transactions/TG01_T10_HTLC_REFUND.md)
+- TypeGroup 2
+  - [Type 0: Burn](./transactions/TG02_T00_BURN.md)
+  - [Type 2: Vote](./transactions/TG02_T02_VOTE.md)
 
 ### Signature
 
-Deterministic ECDSA ([RFC 6979](https://tools.ietf.org/html/rfc6979)) is used to sign transaction on the [SECP-256k1](https://www.secg.org/sec2-v2.pdf#subsubsection.2.4.1) curve.
-The signed message is `m = Keccak-256(nonce || to || value || memo_len || memo)`.
+[BIP-0340 Schnorr](https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki) is used to sign transactions on the [SECP-256k1](https://www.secg.org/sec2-v2.pdf#subsubsection.2.4.1) curve.
+A Solar transaction is signed by first constructing a SHA256 hash of a serialised transaction (`sha256(serialised_tx)`); this hash is subsequently signed producing a 64-byte Schnorr signature.
 
 ### Fee
 
-You won't find any fee in the transaction structure because the BOLOK *chain* has constant fees.
+Solar transaction fees are dynamic and can be found via the network's API: [https://sxp.mainnet.sh/api/node/fees](https://sxp.mainnet.sh/api/node/fees)
 
 ## Links
 
-- Bitcoin Transaction: https://en.bitcoin.it/wiki/Protocol_documentation#tx
-
-- Ethereum Transaction: https://ethereum.github.io/yellowpaper/paper.pdf#subsection.4.2
+- Solar API Documentation - [https://docs.solar.org/api/public-rest-api/getting-started](https://docs.solar.org/api/public-rest-api/getting-started)
+- Solar Explorer - [https://explorer.solar.org](https://explorer.solar.org)
+- Solar Staking - [https://solar.org/staking](https://solar.org/staking)
+- Solar Whitepaper - [https://docs.solar.org/assets/documents/whitepaper-february-2022.pdf](https://docs.solar.org/assets/documents/whitepaper-february-2022.pdf)

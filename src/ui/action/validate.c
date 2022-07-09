@@ -1,4 +1,10 @@
 /*****************************************************************************
+ *  This work is licensed under a Creative Commons Attribution-NoDerivatives
+ *  4.0 International License.
+ *
+ *  This software also incorporates work covered by the following copyright
+ *  and permission notice:
+ *
  *   Ledger App Boilerplate.
  *   (c) 2020 Ledger SAS.
  *
@@ -21,8 +27,9 @@
 #include "../menu.h"
 #include "../../sw.h"
 #include "../../io.h"
-#include "../../crypto.h"
+#include "../../crypto/crypto.h"
 #include "../../globals.h"
+#include "../../context.h"
 #include "../../helper/send_response.h"
 
 void ui_action_validate_pubkey(bool choice) {
@@ -35,20 +42,28 @@ void ui_action_validate_pubkey(bool choice) {
     ui_menu_main();
 }
 
+void ui_action_validate_address(bool choice) {
+    if (choice) {
+        helper_send_response_address();
+    } else {
+        io_send_sw(SW_DENY);
+    }
+
+    ui_menu_main();
+}
+
 void ui_action_validate_transaction(bool choice) {
     if (choice) {
         G_context.state = STATE_APPROVED;
 
         if (crypto_sign_message() < 0) {
-            G_context.state = STATE_NONE;
             io_send_sw(SW_SIGNATURE_FAIL);
         } else {
             helper_send_response_sig();
         }
     } else {
-        G_context.state = STATE_NONE;
         io_send_sw(SW_DENY);
     }
-
+    reset_app_context();
     ui_menu_main();
 }

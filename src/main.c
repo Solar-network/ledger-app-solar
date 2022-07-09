@@ -1,4 +1,10 @@
 /*****************************************************************************
+ *  This work is licensed under a Creative Commons Attribution-NoDerivatives
+ *  4.0 International License.
+ *
+ *  This software also incorporates work covered by the following copyright
+ *  and permission notice:
+ *
  *   Ledger App Boilerplate.
  *   (c) 2020 Ledger SAS.
  *
@@ -25,6 +31,7 @@
 #include "globals.h"
 #include "io.h"
 #include "sw.h"
+#include "context.h"
 #include "ui/menu.h"
 #include "apdu/parser.h"
 #include "apdu/dispatcher.h"
@@ -49,7 +56,7 @@ void app_main() {
     G_io_state = READY;
 
     // Reset context
-    explicit_bzero(&G_context, sizeof(G_context));
+    reset_app_context();
 
     for (;;) {
         BEGIN_TRY {

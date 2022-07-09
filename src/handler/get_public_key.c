@@ -1,4 +1,10 @@
 /*****************************************************************************
+ *  This work is licensed under a Creative Commons Attribution-NoDerivatives
+ *  4.0 International License.
+ *
+ *  This software also incorporates work covered by the following copyright
+ *  and permission notice:
+ *
  *   Ledger App Boilerplate.
  *   (c) 2020 Ledger SAS.
  *
@@ -15,6 +21,8 @@
  *  limitations under the License.
  *****************************************************************************/
 
+#include "get_public_key.h"
+
 #include <stdint.h>   // uint*_t
 #include <stdbool.h>  // bool
 #include <stddef.h>   // size_t
@@ -23,20 +31,20 @@
 #include "os.h"
 #include "cx.h"
 
-#include "get_public_key.h"
 #include "../globals.h"
 #include "../types.h"
+#include "../context.h"
 #include "../io.h"
 #include "../sw.h"
-#include "../crypto.h"
+#include "../crypto/crypto.h"
 #include "../common/buffer.h"
 #include "../ui/display.h"
 #include "../helper/send_response.h"
 
-int handler_get_public_key(buffer_t *cdata, bool display) {
-    explicit_bzero(&G_context, sizeof(G_context));
-    G_context.req_type = CONFIRM_ADDRESS;
-    G_context.state = STATE_NONE;
+int handler_get_public_key(buffer_t *cdata, bool user_approval, bool use_chain_code) {
+    reset_app_context();
+    G_context.req_type = CONFIRM_PUBLICKEY;
+    G_context.pk_info.use_chaincode = use_chain_code;
 
     cx_ecfp_private_key_t private_key = {0};
     cx_ecfp_public_key_t public_key = {0};
@@ -48,16 +56,18 @@ int handler_get_public_key(buffer_t *cdata, bool display) {
 
     // derive private key according to BIP32 path
     crypto_derive_private_key(&private_key,
-                              G_context.pk_info.chain_code,
+                              use_chain_code ? G_context.pk_info.chain_code : NULL,
                               G_context.bip32_path,
                               G_context.bip32_path_len);
+
     // generate corresponding public key
     crypto_init_public_key(&private_key, &public_key, G_context.pk_info.raw_public_key);
+
     // reset private key
     explicit_bzero(&private_key, sizeof(private_key));
 
-    if (display) {
-        return ui_display_address();
+    if (user_approval) {
+        return ui_display_public_key();
     }
 
     return helper_send_response_pubkey();
