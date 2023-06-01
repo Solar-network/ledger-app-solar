@@ -26,31 +26,23 @@ bool vote_type_display(transaction_t *tx, char title[], char text[], uint16_t st
                     tx->core_asset.Vote.vote_length,
                     &asset);
         if (step % 2 == 0) {
-            char title_text[] = "Delegate (%d/%d)";
-            if (vote_number >= 9) {
-                strcpy(title_text, "Delegate(%d/%d)");
-            }
             snprintf(title,
                      MAX_TITLE_LEN,
-                     title_text,
+                     vote_number >= 9 ? "Block Producer(%d/%d)" : "Block Producer (%d/%d)",
                      vote_number + 1,
                      tx->core_asset.Vote.vote_length);
 
             snprintf(text, MAX_TEXT_LEN, "%.*s", asset.username_length, asset.username);
-            return true;
         } else {
-            char title_text[] = "Vote %% (%d/%d)";
-            if (vote_number >= 9) {
-                strcpy(title_text, "Vote %%(%d/%d)");
-            }
             snprintf(title,
                      MAX_TITLE_LEN,
-                     title_text,
+                     vote_number >= 9 ? "Vote %%(%d/%d)" : "Vote %% (%d/%d)",
                      vote_number + 1,
                      tx->core_asset.Vote.vote_length);
+
             format_percentage(text, MAX_TEXT_LEN, asset.percentage, 2);
-            return true;
         }
+        return true;
     }
 
     switch (step - (tx->core_asset.Vote.vote_length * 2)) {
