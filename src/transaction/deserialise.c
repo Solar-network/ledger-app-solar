@@ -6,7 +6,7 @@
  *  and permission notice:
  *
  *   Ledger App Boilerplate.
- *   (c) 2020 Ledger SAS.
+ *   (c) 2023 Ledger SAS.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,10 +22,16 @@
  *****************************************************************************/
 
 #include "deserialise.h"
-#include "utils.h"
-#include "types.h"
-#include "../constants.h"
-#include "../common/buffer.h"
+
+#include <stdint.h>  // uint*_t
+
+#include "buffer.h"
+
+#include "constants.h"
+
+#include "transaction/errors.h"
+#include "transaction/transaction_utils.h"
+#include "transaction/types.h"
 
 parser_status_e transaction_deserialise(buffer_t *buf, transaction_t *tx) {
     parser_status_e parse_common = transaction_deserialise_common(buf, tx);
@@ -79,7 +85,7 @@ parser_status_e transaction_deserialise_common(buffer_t *buf, transaction_t *tx)
     }
 
     // nonce
-    if (!buffer_seek_cur(buf, NONCE_LENGTH)) {
+    if (!buffer_seek_cur(buf, sizeof(uint64_t))) {
         return WRONG_LENGTH_ERROR;
     }
 
@@ -97,6 +103,10 @@ parser_status_e transaction_deserialise_common(buffer_t *buf, transaction_t *tx)
 
     // memo length
     if (!buffer_read_u8(buf, &tx->memo_len)) {
+        return WRONG_LENGTH_ERROR;
+    }
+
+    if (tx->memo_len > MEMO_MAX_LEN) {
         return WRONG_LENGTH_ERROR;
     }
 
@@ -144,7 +154,7 @@ parser_status_e transaction_deserialise_core_asset(buffer_t *buf,
 parser_status_e message_deserialise(buffer_t *buf, transaction_t *tx) {
     // message length
     if (!buffer_read_u16(buf, &tx->message_length, LE) || tx->message_length < 1 ||
-        tx->message_length > MAX_TRANSACTION_LEN - 3) {
+        tx->message_length > TRANSACTION_MAX_LEN - 3) {
         return WRONG_LENGTH_ERROR;
     }
 

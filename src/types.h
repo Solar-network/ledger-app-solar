@@ -6,7 +6,7 @@
  *  and permission notice:
  *
  *   Ledger App Boilerplate.
- *   (c) 2020 Ledger SAS.
+ *   (c) 2023 Ledger SAS.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ typedef struct {
  * Structure for transaction information context.
  */
 typedef struct {
-    uint8_t raw_tx[MAX_TRANSACTION_LEN];  /// raw transaction serialised
+    uint8_t raw_tx[TRANSACTION_MAX_LEN];  /// raw transaction serialised
     size_t raw_tx_len;                    /// length of raw transaction
     transaction_t transaction;            /// structured transaction
     uint8_t m_hash[32];                   /// message hash digest

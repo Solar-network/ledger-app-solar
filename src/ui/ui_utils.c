@@ -39,13 +39,13 @@
 
 #if defined(TARGET_NANOS)  // Estimate amount/fee line pixel count for the Nano S.
 
-// extern from:
-// https://github.com/LedgerHQ/nanos-secure-sdk/blob/master/lib_ux/src/ux_layout_paging_compute.c#L20-#L117
-extern const char nanos_characters_width[96];
-
 // copied from:
 // https://github.com/LedgerHQ/nanos-secure-sdk/blob/master/lib_ux/include/ux_layout_paging_compute.h#L8
 #define PIXEL_PER_LINE 114
+
+// extern from:
+// https://github.com/LedgerHQ/nanos-secure-sdk/blob/master/lib_ux/src/ux_layout_paging_compute.c#L20-#L117
+extern const char nanos_characters_width[96];
 
 // adapted from:
 // https://github.com/LedgerHQ/nanos-secure-sdk/blob/master/lib_ux/src/ux_layout_paging_compute.c#L147-#L175

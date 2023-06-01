@@ -6,7 +6,7 @@
  *  and permission notice:
  *
  *   Ledger App Boilerplate.
- *   (c) 2020 Ledger SAS.
+ *   (c) 2023 Ledger SAS.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,14 +23,12 @@
 
 #pragma once
 
-//#include <stddef.h>  // size_t
 #include <stdint.h>  // uint*_t
-#include "types/types.h"
+
+#include "transaction/types/types.h"
 
 #define STARTING_BYTE         0xFF
 #define TRANSACTION_VERSION_3 0x03
-#define NONCE_LENGTH          0x08
-#define MAX_MEMO_LEN          255
 
 typedef enum { TYPEGROUP_CORE = 1, TYPEGROUP_SOLAR = 2 } transaction_typegroup;
 
