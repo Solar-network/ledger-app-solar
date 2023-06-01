@@ -52,10 +52,10 @@ typedef struct {
     // Transaction
     uint32_t typeGroup;         /// typeGroup (4 bytes)
     uint16_t type;              /// type (2 bytes)
-    uint8_t *sender_publickey;  /// sender publick key (33 bytes)
+    uint8_t *sender_publickey;  /// sender public key (33 bytes)
     uint64_t fee;               /// fee (8 bytes)
     uint8_t memo_len;           /// length of memo (1 byte)
-    uint8_t *memo;              /// memo (MAX lenth 255)
+    uint8_t *memo;              /// memo (MAX length 255)
 
     transaction_asset_t core_asset;  /// transaction specific assets (variable length and structure)
 } transaction_t;

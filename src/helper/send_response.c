@@ -6,7 +6,7 @@
  *  and permission notice:
  *
  *   Ledger App Boilerplate.
- *   (c) 2020 Ledger SAS.
+ *   (c) 2023 Ledger SAS.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,17 +21,19 @@
  *  limitations under the License.
  *****************************************************************************/
 
+#include "send_response.h"
+
 #include <stddef.h>  // size_t
 #include <stdint.h>  // uint*_t
 #include <string.h>  // memmove
 
-#include "send_response.h"
-#include "../constants.h"
-#include "../globals.h"
-#include "../context.h"
-#include "../sw.h"
-#include "common/buffer.h"
-#include "../address.h"
+#include "buffer.h"
+
+#include "address.h"
+#include "constants.h"
+#include "context.h"
+#include "globals.h"
+#include "sw.h"
 
 int helper_send_response_pubkey() {
     uint8_t resp[1 + PUBLIC_KEY_LEN + 1 + CHAINCODE_LEN] = {0};
@@ -40,16 +42,13 @@ int helper_send_response_pubkey() {
     resp[offset++] = PUBLIC_KEY_LEN;
     memmove(resp + offset, G_context.pk_info.raw_public_key, PUBLIC_KEY_LEN);
     offset += PUBLIC_KEY_LEN;
-
-    if (G_context.pk_info.use_chaincode) {
-        resp[offset++] = CHAINCODE_LEN;
-        memmove(resp + offset, G_context.pk_info.chain_code, CHAINCODE_LEN);
-        offset += CHAINCODE_LEN;
-    }
+    resp[offset++] = CHAINCODE_LEN;
+    memmove(resp + offset, G_context.pk_info.chain_code, CHAINCODE_LEN);
+    offset += CHAINCODE_LEN;
 
     reset_app_context();
 
-    return io_send_response(&(const buffer_t){.ptr = resp, .size = offset, .offset = 0}, SW_OK);
+    return io_send_response_pointer(resp, offset, SW_OK);
 }
 
 int helper_send_response_address() {
@@ -76,7 +75,7 @@ int helper_send_response_address() {
 
     reset_app_context();
 
-    return io_send_response(&(const buffer_t){.ptr = resp, .size = offset, .offset = 0}, SW_OK);
+    return io_send_response_pointer(resp, offset, SW_OK);
 }
 
 int helper_send_response_sig() {
@@ -84,6 +83,5 @@ int helper_send_response_sig() {
 
     memmove(resp, G_context.tx_info.signature, SIG_SCHNORR_LEN);
 
-    return io_send_response(&(const buffer_t){.ptr = resp, .size = SIG_SCHNORR_LEN, .offset = 0},
-                            SW_OK);
+    return io_send_response_pointer(resp, SIG_SCHNORR_LEN, SW_OK);
 }

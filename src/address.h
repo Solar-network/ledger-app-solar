@@ -39,7 +39,7 @@
  * @param[out] out
  *   Pointer to output byte buffer for address.
  * @param[in]  out_len
- *   Lenght of output byte buffer.
+ *   Length of output byte buffer.
  * @param[in]  network
  *   Network byte.
  *
@@ -59,7 +59,7 @@ bool address_from_pubkey(const uint8_t public_key[static 33],
  * @param[in]  in
  *   Pointer to address bytes.
  * @param[in]  in_len
- *   Lenght of input byte buffer.
+ *   Length of input byte buffer.
  * @param[out] out
  *   Pointer to output checksum bytes.
  *
@@ -73,7 +73,7 @@ void crypto_get_checksum(const uint8_t *in, size_t in_len, uint8_t out[static 4]
  * @param[in]  in
  *   Pointer to byte buffer with address.
  * @param[in]  in_len
- *   Lenght of input address bytes.
+ *   Length of input address bytes.
  * @param[out] out
  *   Pointer to output byte buffer for address.
  * @param[in]  out_len

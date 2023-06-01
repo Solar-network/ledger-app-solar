@@ -24,7 +24,7 @@ typedef struct {
  * Get next content to display.
  *
  * @param[in, out] ctx
- *   Pointer to the contect structure.
+ *   Pointer to the context structure.
  * @param[in] tx
  *   Pointer to transaction structure.
  * @param[out] title
@@ -41,7 +41,7 @@ bool context_get_next(ctx_t *ctx, transaction_t *tx, char title[], char text[]);
  * Get previous content to display.
  *
  * @param[in, out] ctx
- *   Pointer to the contect structure.
+ *   Pointer to the context structure.
  * @param[in] tx
  *   Pointer to transaction structure.
  * @param[out] title

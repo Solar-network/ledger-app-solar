@@ -266,7 +266,7 @@ void display_next_state(bool is_upper_delimiter) {
     }
 }
 
-// Upper delimeter step
+// Upper delimiter step
 UX_STEP_INIT(step_upper_delimiter, NULL, NULL, { display_next_state(true); });
 
 // general dynamic step
@@ -277,7 +277,7 @@ UX_STEP_NOCB(ux_display_general,
                  .text = g_current_text,
              });
 
-// Lower delimeter step
+// Lower delimiter step
 UX_STEP_INIT(step_lower_delimiter, NULL, NULL, { display_next_state(false); });
 
 // FLOW to display transaction:
