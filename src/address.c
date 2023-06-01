@@ -63,7 +63,10 @@ void crypto_get_checksum(const uint8_t *in, size_t in_len, uint8_t out[static 4]
 }
 
 int base58_encode_address(const uint8_t *in, size_t in_len, char *out, size_t out_len) {
-    uint8_t tmp[in_len + 4 + 1];  // version + max_in_len + checksum + null-byte
+    if (in_len != ADDRESS_HASH_LEN) {
+        return -1;
+    }
+    uint8_t tmp[ADDRESS_HASH_LEN + 4 + 1];  // ... + checksum + null-byte
 
     memcpy(tmp, in, in_len);
     crypto_get_checksum(tmp, in_len, tmp + in_len);
