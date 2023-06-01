@@ -48,12 +48,8 @@ The network/version byte is used to set the leading character of the address and
 ## Transaction Structures
 
 - TypeGroup 1
-  - [Type 4: MultiSignature Registration](./transactions/TG01_T04_MULTISIGNATURE_REG.md)
   - [Type 5: IPFS](./transactions/TG01_T05_IPFS.md)
   - [Type 6: Transfer](./transactions/TG01_T06_TRANSFER.md)
-  - [Type 8: HTLC Lock](./transactions/TG01_T08_HTLC_LOCK.md)
-  - [Type 9: HTLC Claim](./transactions/TG01_T09_HTLC_CLAIM.md)
-  - [Type 10: HTLC Refund](./transactions/TG01_T10_HTLC_REFUND.md)
 - TypeGroup 2
   - [Type 0: Burn](./transactions/TG02_T00_BURN.md)
   - [Type 2: Vote](./transactions/TG02_T02_VOTE.md)
@@ -69,7 +65,5 @@ Solar transaction fees are dynamic and can be found via the network's API: [http
 
 ## Links
 
-- Solar API Documentation - [https://docs.solar.org/api/public-rest-api/getting-started](https://docs.solar.org/api/public-rest-api/getting-started)
-- Solar Explorer - [https://explorer.solar.org](https://explorer.solar.org)
-- Solar Staking - [https://solar.org/staking](https://solar.org/staking)
+- Solar Documentation - [https://docs.solar.org/](https://docs.solar.org)
 - Solar Whitepaper - [https://docs.solar.org/assets/documents/whitepaper-february-2022.pdf](https://docs.solar.org/assets/documents/whitepaper-february-2022.pdf)
