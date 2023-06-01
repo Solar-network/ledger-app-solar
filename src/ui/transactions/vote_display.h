@@ -7,9 +7,10 @@
 
 #pragma once
 
-#include <stdbool.h>
-#include "../../transaction/types.h"
-#include "../ctx.h"
+#include <stdbool.h>  // bool
+#include <stdint.h>   // uint*_t
+
+#include "transaction/types.h"
 
 /**
  * Produce content for specific transaction.

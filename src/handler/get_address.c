@@ -12,21 +12,20 @@
 #include <stddef.h>   // size_t
 #include <string.h>   // memset, explicit_bzero
 
-#include "os.h"
 #include "cx.h"
+#include "io.h"
+#include "os.h"
 
-#include "../io.h"
-#include "../sw.h"
-#include "../context.h"
+#include "buffer.h"
 
-#include "../globals.h"
-#include "../types.h"
+#include "context.h"
+#include "globals.h"
+#include "sw.h"
+#include "types.h"
 
-#include "../common/buffer.h"
-#include "../crypto/crypto.h"
-
-#include "../ui/display.h"
-#include "../helper/send_response.h"
+#include "crypto/crypto.h"
+#include "helper/send_response.h"
+#include "ui/display.h"
 
 int handler_get_address(buffer_t *cdata, bool user_approval, uint8_t network) {
     reset_app_context();

@@ -7,8 +7,9 @@
 
 #pragma once
 
-#include "../errors.h"
-#include "../../common/buffer.h"
+#include "buffer.h"
+
+#include "transaction/errors.h"
 
 typedef struct {
     uint8_t ipfs_length;  /// ipfs length (1 byte)

@@ -7,8 +7,11 @@
 
 #pragma once
 
-#include "../errors.h"
-#include "../../common/buffer.h"
+#include <stdint.h>  // uint*_t
+
+#include "buffer.h"
+
+#include "transaction/errors.h"
 
 #define MIN_NUM_VOTES       0
 #define MAX_NUM_VOTES       53

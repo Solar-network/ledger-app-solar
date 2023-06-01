@@ -6,7 +6,7 @@
  *  and permission notice:
  *
  *   Ledger App Boilerplate.
- *   (c) 2020 Ledger SAS.
+ *   (c) 2023 Ledger SAS.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,23 +21,26 @@
  *  limitations under the License.
  *****************************************************************************/
 
+#include "sign_tx.h"
+
 #include <stdint.h>   // uint*_t
 #include <stdbool.h>  // bool
 #include <stddef.h>   // size_t
 #include <string.h>   // memset, explicit_bzero
 
-#include "os.h"
 #include "cx.h"
+#include "os.h"
+#include "sw.h"
 
-#include "sign_tx.h"
-#include "../sw.h"
-#include "../globals.h"
-#include "../context.h"
-#include "../crypto/crypto.h"
-#include "../ui/display.h"
-#include "../common/buffer.h"
-#include "../transaction/types.h"
-#include "../transaction/deserialise.h"
+#include "buffer.h"
+
+#include "context.h"
+#include "crypto.h"
+#include "globals.h"
+
+#include "transaction/deserialise.h"
+#include "transaction/types.h"
+#include "ui/display.h"
 
 int handler_sign_tx(buffer_t *cdata, uint8_t chunk, bool more, bool is_message) {
     if (chunk == 0) {  // first APDU, parse BIP32 path

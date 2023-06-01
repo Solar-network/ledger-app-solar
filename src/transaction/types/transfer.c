@@ -6,8 +6,12 @@
  *****************************************************************************/
 
 #include "transfer.h"
+
+#include "buffer.h"
+
 #include "constants.h"
-#include "../../common/buffer.h"
+
+#include "transaction/errors.h"
 
 parser_status_e transfer_type_deserialise(buffer_t *buf, transfer_transaction_asset_t *tx) {
     // length

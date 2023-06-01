@@ -28,18 +28,19 @@
 #include <stddef.h>   // size_t
 #include <string.h>   // memset, explicit_bzero
 
-#include "os.h"
+#include "buffer.h"
 #include "cx.h"
+#include "io.h"
+#include "os.h"
 
-#include "../globals.h"
-#include "../types.h"
-#include "../context.h"
-#include "../io.h"
-#include "../sw.h"
-#include "../crypto/crypto.h"
-#include "../common/buffer.h"
-#include "../ui/display.h"
-#include "../helper/send_response.h"
+#include "context.h"
+#include "globals.h"
+#include "types.h"
+#include "sw.h"
+
+#include "crypto/crypto.h"
+#include "helper/send_response.h"
+#include "ui/display.h"
 
 int handler_get_public_key(buffer_t *cdata, bool user_approval, bool use_chain_code) {
     reset_app_context();

@@ -23,8 +23,11 @@
 
 #pragma once
 
-#include "types.h"
-#include "../common/buffer.h"
+#include <stdint.h>  // uint*_t
+
+#include "buffer.h"
+
+#include "transaction/types.h"
 
 /**
  * Deserialise raw transaction in structure.

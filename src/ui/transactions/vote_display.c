@@ -5,16 +5,23 @@
  *  4.0 International License.
  *****************************************************************************/
 
-#include <stdio.h>
+#include "ui/transactions/vote_display.h"
+
+#include <stdint.h>  // uint*_t
+#include <stdio.h>   // snprintf
 #include <string.h>
-#include "vote_display.h"
-#include "types.h"
+
+#include "base58.h"
+#include "buffer.h"
+#include "format.h"
+#include "read.h"
+
 #include "constants.h"
-#include "../../transaction/types/vote.h"
-#include "../../common/buffer.h"
-#include "../../common/format.h"
-#include "../../common/read.h"
-#include "../../common/base58.h"
+#include "types.h"
+
+#include "transaction/transaction_utils.h"
+#include "transaction/types/vote.h"
+#include "ui/ctx.h"
 
 bool vote_type_display(transaction_t *tx, char title[], char text[], uint16_t step) {
     // Votes

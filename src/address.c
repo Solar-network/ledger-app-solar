@@ -21,18 +21,18 @@
  *  limitations under the License.
  *****************************************************************************/
 
-#include <stdint.h>   // uint*_t
-#include <stddef.h>   // size_t
-#include <stdbool.h>  // bool
-#include <string.h>   // memmove
-
-#include "os.h"
-#include "cx.h"
-
 #include "address.h"
 
+#include <stdbool.h>  // bool
+#include <stddef.h>   // size_t
+#include <stdint.h>   // uint*_t
+#include <string.h>   // memmove
+
+#include "base58.h"
+#include "cx.h"
+#include "os.h"
+
 #include "constants.h"
-#include "common/base58.h"
 
 bool address_from_pubkey(const uint8_t public_key[static 33],
                          uint8_t *out,

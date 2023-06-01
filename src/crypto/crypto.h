@@ -25,8 +25,8 @@
 
 #include <stdint.h>  // uint*_t
 
-#include "os.h"
 #include "cx.h"
+#include "os.h"
 
 /**
  * Derive private key given BIP32 path.

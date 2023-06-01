@@ -23,11 +23,9 @@
 
 #pragma once
 
-#include <stddef.h>   // size_t
 #include <stdbool.h>  // bool
-#include <stdint.h>   // uint*_t
 
-#include "../common/buffer.h"
+#include "buffer.h"
 
 /**
  * Handler for GET_PUBLIC_KEY command. If it successfully parses BIP32 path,

@@ -6,8 +6,12 @@
  *****************************************************************************/
 
 #include "burn.h"
+
+#include "buffer.h"
+
 #include "constants.h"
-#include "../../common/buffer.h"
+
+#include "transaction/errors.h"
 
 parser_status_e burn_type_deserialise(buffer_t *buf, burn_transaction_asset_t *tx) {
     // amount

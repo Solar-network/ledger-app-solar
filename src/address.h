@@ -23,9 +23,9 @@
 
 #pragma once
 
-#include <stdint.h>   // uint*_t
-#include <stddef.h>   // size_t
 #include <stdbool.h>  // bool
+#include <stddef.h>   // size_t
+#include <stdint.h>   // uint*_t
 
 /**
  * Convert public key to address.

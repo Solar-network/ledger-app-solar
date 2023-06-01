@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include <stdint.h>
-#include <stdbool.h>
+#include <stdbool.h>  // bool
+#include <stdint.h>   // uint*_t
 
-#include "../transaction/types.h"
+#include "transaction/types.h"
 
 #define MAX_TITLE_LEN 16
 #define MAX_TEXT_LEN  385

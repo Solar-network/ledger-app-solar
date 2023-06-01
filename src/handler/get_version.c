@@ -21,16 +21,18 @@
  *  limitations under the License.
  *****************************************************************************/
 
+#include "get_version.h"
+
 #include <stdint.h>  // uint*_t
 #include <limits.h>  // UINT8_MAX
 #include <assert.h>  // _Static_assert
 
-#include "get_version.h"
-#include "../constants.h"
-#include "../io.h"
-#include "../sw.h"
-#include "../types.h"
-#include "common/buffer.h"
+#include "io.h"
+#include "buffer.h"
+
+#include "constants.h"
+#include "sw.h"
+#include "types.h"
 
 int handler_get_version() {
     _Static_assert(APPVERSION_LEN == 3, "Length of (MAJOR || MINOR || PATCH) must be 3!");

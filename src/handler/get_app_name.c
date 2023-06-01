@@ -21,14 +21,15 @@
  *  limitations under the License.
  *****************************************************************************/
 
-#include <stdint.h>  // uint*_t
-
 #include "get_app_name.h"
-#include "../constants.h"
-#include "../io.h"
-#include "../sw.h"
-#include "../types.h"
-#include "common/buffer.h"
+
+#include "buffer.h"
+#include "io.h"
+#include "os.h"
+
+#include "constants.h"
+#include "sw.h"
+#include "types.h"
 
 int handler_get_app_name() {
     _Static_assert(APPNAME_LEN < APPNAME_MAX_LEN, "APPNAME must be at most 64 characters!");
