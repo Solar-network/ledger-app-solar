@@ -1,63 +1,15 @@
-from pathlib import Path
+from ragger.conftest import configuration
 
-import pytest
+###########################
+### CONFIGURATION START ###
+###########################
 
-from client.client_interface import Speculos, Ledgercomm
-from client.cmd import Command
+# You can configure optional parameters by overriding the value of ragger.configuration.OPTIONAL_CONFIGURATION
+# Please refer to ragger/conftest/configuration.py for their descriptions and accepted values
 
-SCRIPT_DIR = Path(__file__).absolute().parent
+#########################
+### CONFIGURATION END ###
+#########################
 
-
-def pytest_addoption(parser):
-    parser.addoption("--hid", action="store_true")
-    parser.addoption("--headless", action="store_true")
-    parser.addoption("--manual", action="store_true")
-
-
-@pytest.fixture(scope="module")
-def sw_h_path():
-    # path with tests
-    conftest_folder_path: Path = Path(__file__).parent
-    # sw.h should be in ../../src/sw.h
-    sw_h_path = conftest_folder_path.parent.parent / "src" / "sw.h"
-
-    if not sw_h_path.is_file():
-        raise FileNotFoundError(f"Can't find sw.h: '{sw_h_path}'")
-
-    return sw_h_path
-
-
-@pytest.fixture(scope="session")
-def hid(pytestconfig):
-    return pytestconfig.getoption("hid")
-
-
-@pytest.fixture(scope="session")
-def headless(pytestconfig):
-    return pytestconfig.getoption("headless")
-
-
-@pytest.fixture(scope="session")
-def manual(pytestconfig):
-    return pytestconfig.getoption("manual")
-
-
-@pytest.fixture(scope="session")
-def cmd(hid, headless, manual):
-    file_path = SCRIPT_DIR.parent.parent / "bin" / "app.elf"
-    args = ["--model", "nanos", "--sdk", "2.1"]
-    if headless:
-        manual = False
-    else:
-        args.append("--display")
-        args.append("qt")
-
-    transport = (
-        Ledgercomm()
-        if hid
-        else Speculos(file_path=str(file_path), args=args, automatic=not manual)
-    )
-    command = Command(transport=transport, debug=True)
-    command.transport.start()
-    yield command
-    command.transport.close()
+# Pull all features from the base ragger conftest using the overridden configuration
+pytest_plugins = ("ragger.conftest.base_conftest", )

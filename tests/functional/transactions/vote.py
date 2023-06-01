@@ -1,7 +1,7 @@
 from typing import Union, List
 
-from client.utils import UINT16_MAX
-from client.transaction import Transaction, TransactionError
+from application_client.solar_utils import UINT16_MAX
+from application_client.solar_transaction import Transaction, TransactionError
 
 
 class Vote(Transaction):
