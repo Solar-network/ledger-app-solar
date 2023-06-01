@@ -27,18 +27,11 @@
 #include <stddef.h>   // size_t
 #include <stdint.h>   // uint*_t
 
-#include "constants.h"
-#include "transaction/types.h"
-#include "common/bip32.h"
+#include "bip32.h"
 
-/**
- * Enumeration for the status of IO.
- */
-typedef enum {
-    READY,     /// ready for new event
-    RECEIVED,  /// data received
-    WAITING    /// waiting
-} io_state_e;
+#include "constants.h"
+
+#include "transaction/types.h"
 
 /**
  * Enumeration with expected INS of APDU commands.
@@ -51,18 +44,6 @@ typedef enum {
     SIGN_MESSAGE = 0xc1,    /// sign message with BIP32 path
     SIGN_TX = 0xc2          /// sign transaction with BIP32 path
 } command_e;
-
-/**
- * Structure with fields of APDU command.
- */
-typedef struct {
-    uint8_t cla;    /// Instruction class
-    command_e ins;  /// Instruction code
-    uint8_t p1;     /// Instruction parameter 1
-    uint8_t p2;     /// Instruction parameter 2
-    uint8_t lc;     /// Length of command data
-    uint8_t *data;  /// Command data
-} command_t;
 
 /**
  * Enumeration with parsing state.

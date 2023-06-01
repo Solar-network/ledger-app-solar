@@ -326,12 +326,6 @@ int ui_display_transaction() {
         }
     } else {
         switch (G_context.tx_info.transaction.type) {
-            case MULTISIGNATURE_REGISTRATION: {
-                snprintf(g_transaction_name, sizeof(g_transaction_name), "%s", "Multisignature");
-
-                display_context.f = &multisignature_type_display;
-                break;
-            }
             case IPFS: {
                 // First screen
                 snprintf(g_transaction_name, sizeof(g_transaction_name), "%s", "IPFS");
@@ -343,27 +337,6 @@ int ui_display_transaction() {
                 snprintf(g_transaction_name, sizeof(g_transaction_name), "%s", "Transfer");
 
                 display_context.f = &transfer_type_display;
-                break;
-            }
-            case HTLC_LOCK: {
-                // First screen
-                snprintf(g_transaction_name, sizeof(g_transaction_name), "%s", "HTLC Lock");
-
-                display_context.f = &htlc_lock_type_display;
-                break;
-            }
-            case HTLC_CLAIM: {
-                // First screen
-                snprintf(g_transaction_name, sizeof(g_transaction_name), "%s", "HTLC Claim");
-
-                display_context.f = &htlc_claim_type_display;
-                break;
-            }
-            case HTLC_REFUND: {
-                // First screen
-                snprintf(g_transaction_name, sizeof(g_transaction_name), "%s", "HTLC Refund");
-
-                display_context.f = &htlc_refund_type_display;
                 break;
             }
             default:

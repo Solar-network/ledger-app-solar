@@ -34,15 +34,7 @@
 
 typedef enum { TYPEGROUP_CORE = 1, TYPEGROUP_SOLAR = 2 } transaction_typegroup;
 
-typedef enum {
-    MULTISIGNATURE_REGISTRATION = 4,
-    IPFS = 5,
-    TRANSFER = 6,
-    HTLC_LOCK = 8,
-    HTLC_CLAIM = 9,
-    HTLC_REFUND = 10
-} transaction_type_core;
-
+typedef enum { IPFS = 5, TRANSFER = 6 } transaction_type_core;
 typedef enum { BURN = 0, VOTE = 2 } transaction_type_solar;
 
 typedef struct {

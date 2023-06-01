@@ -129,18 +129,10 @@ parser_status_e transaction_deserialise_core_asset(buffer_t *buf,
         }
     } else if (typeGroup == TYPEGROUP_CORE) {
         switch (type) {
-            case MULTISIGNATURE_REGISTRATION:
-                return multisignature_type_deserialise(buf, &tx->Multisignature);
             case IPFS:
                 return ipfs_type_deserialise(buf, &tx->Ipfs);
             case TRANSFER:
                 return transfer_type_deserialise(buf, &tx->Transfer);
-            case HTLC_LOCK:
-                return htlc_lock_type_deserialise(buf, &tx->Htlc_lock);
-            case HTLC_CLAIM:
-                return htlc_claim_type_deserialise(buf, &tx->Htlc_claim);
-            case HTLC_REFUND:
-                return htlc_refund_type_deserialise(buf, &tx->Htlc_refund);
             default:
                 return TYPE_PARSING_ERROR;
         }
