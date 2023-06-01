@@ -1,12 +1,6 @@
 /*****************************************************************************
- *  This work is licensed under a Creative Commons Attribution-NoDerivatives
- *  4.0 International License.
- *
- *  This software also incorporates work covered by the following copyright
- *  and permission notice:
- *
  *   Ledger App Boilerplate.
- *   (c) 2020 Ledger SAS.
+ *   (c) 2023 Ledger SAS.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,22 +18,17 @@
 #include <stdint.h>  // uint*_t
 #include <string.h>  // memset, explicit_bzero
 
+#include "io.h"
 #include "os.h"
+#include "sw.h"
 #include "ux.h"
 
-#include "types.h"
 #include "globals.h"
-#include "io.h"
-#include "sw.h"
-#include "context.h"
-#include "ui/menu.h"
-#include "apdu/parser.h"
-#include "apdu/dispatcher.h"
+#include "types.h"
 
-uint8_t G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
-io_state_e G_io_state;
-ux_state_t G_ux;
-bolos_ux_params_t G_ux_params;
+#include "apdu/dispatcher.h"
+#include "ui/menu.h"
+
 global_ctx_t G_context;
 
 /**
@@ -51,12 +40,12 @@ void app_main() {
     // Structured APDU command
     command_t cmd;
 
-    // Reset length of APDU response
-    G_output_len = 0;
-    G_io_state = READY;
+    io_init();
+
+    ui_menu_main();
 
     // Reset context
-    reset_app_context();
+    explicit_bzero(&G_context, sizeof(G_context));
 
     for (;;) {
         BEGIN_TRY {
@@ -104,68 +93,4 @@ void app_main() {
             END_TRY;
         }
     }
-}
-
-/**
- * Exit the application and go back to the dashboard.
- */
-void app_exit() {
-    BEGIN_TRY_L(exit) {
-        TRY_L(exit) {
-            os_sched_exit(-1);
-        }
-        FINALLY_L(exit) {
-        }
-    }
-    END_TRY_L(exit);
-}
-
-/**
- * Main loop to setup USB, Bluetooth, UI and launch app_main().
- */
-__attribute__((section(".boot"))) int main() {
-    __asm volatile("cpsie i");
-
-    os_boot();
-
-    for (;;) {
-        // Reset UI
-        memset(&G_ux, 0, sizeof(G_ux));
-
-        BEGIN_TRY {
-            TRY {
-                io_seproxyhal_init();
-
-#ifdef TARGET_NANOX
-                G_io_app.plane_mode = os_setting_get(OS_SETTING_PLANEMODE, NULL, 0);
-#endif  // TARGET_NANOX
-
-                USB_power(0);
-                USB_power(1);
-
-                ui_menu_main();
-
-#ifdef HAVE_BLE
-                BLE_power(0, NULL);
-                BLE_power(1, "Nano X");
-#endif  // HAVE_BLE
-                app_main();
-            }
-            CATCH(EXCEPTION_IO_RESET) {
-                CLOSE_TRY;
-                continue;
-            }
-            CATCH_ALL {
-                CLOSE_TRY;
-                break;
-            }
-            FINALLY {
-            }
-        }
-        END_TRY;
-    }
-
-    app_exit();
-
-    return 0;
 }
