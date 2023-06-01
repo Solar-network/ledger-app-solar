@@ -24,9 +24,14 @@
 #pragma once
 
 /**
- * Instruction class of the Solar application.
+ * String length of a Solar address.
  */
-#define CLA 0xE0
+#define ADDRESS_LEN 34
+
+/**
+ * Length of the address hash ([network/version(1), pubKeyHash(20)]).
+ */
+#define ADDRESS_HASH_LEN 21
 
 /**
  * Length of APPNAME variable in the Makefile.
@@ -34,19 +39,19 @@
 #define APPNAME_LEN (sizeof(APPNAME) - 1)
 
 /**
+ * Maximum length of application name.
+ */
+#define APPNAME_MAX_LEN 64
+
+/**
  * Maximum length of MAJOR_VERSION || MINOR_VERSION || PATCH_VERSION.
  */
 #define APPVERSION_LEN 3
 
 /**
- * Maximum length of application name.
+ * Instruction class of the Solar application.
  */
-#define MAX_APPNAME_LEN 64
-
-/**
- * Maximum transaction length (bytes).
- */
-#define MAX_TRANSACTION_LEN 1600
+#define CLA 0xE0
 
 /**
  * Exponent used to convert SXP unit (N SXP = N * 10^8).
@@ -64,14 +69,9 @@
 #define HASH_64_LEN 64
 
 /**
- * Length of the address hash ([network/version(1), pubKeyHash(20)]).
+ * Max length for memo.
  */
-#define ADDRESS_HASH_LEN 21
-
-/**
- * String length of a Solar address.
- */
-#define ADDRESS_LEN 34
+#define MEMO_MAX_LEN 255
 
 /**
  * Solar Mainnet Network Byte
@@ -94,16 +94,11 @@
 #define SIG_SCHNORR_LEN 64
 
 /**
- * Max length for memo.
- */
-#define MAX_MEMO_LEN 255
-
-/**
- * Max length for the hash on HTLC transactions.
- */
-#define MAX_HTLC_HASH_LEN 192
-
-/**
  * The default ticker name used for displaying amounts.
  */
 #define TICKER_DEFAULT "SXP"
+
+/**
+ * Maximum transaction length (bytes).
+ */
+#define TRANSACTION_MAX_LEN 1600

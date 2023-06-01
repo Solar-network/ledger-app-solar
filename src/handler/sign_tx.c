@@ -71,7 +71,7 @@ int handler_sign_tx(buffer_t *cdata, uint8_t chunk, bool more, bool is_message) 
         G_context.req_num++;
 
         if (more) {  // more APDUs with transaction part
-            if (G_context.tx_info.raw_tx_len + cdata->size > MAX_TRANSACTION_LEN ||  //
+            if (G_context.tx_info.raw_tx_len + cdata->size > TRANSACTION_MAX_LEN ||  //
                 cdata->size < UINT8_MAX ||                                           //
                 !buffer_move(cdata,
                              G_context.tx_info.raw_tx + G_context.tx_info.raw_tx_len,
@@ -83,7 +83,7 @@ int handler_sign_tx(buffer_t *cdata, uint8_t chunk, bool more, bool is_message) 
 
             return io_send_sw(SW_OK);
         } else {  // last APDU, let's parse and sign
-            if (G_context.tx_info.raw_tx_len + cdata->size > MAX_TRANSACTION_LEN ||  //
+            if (G_context.tx_info.raw_tx_len + cdata->size > TRANSACTION_MAX_LEN ||  //
                 !buffer_move(cdata,
                              G_context.tx_info.raw_tx + G_context.tx_info.raw_tx_len,
                              cdata->size)) {

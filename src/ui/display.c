@@ -6,7 +6,7 @@
  *  and permission notice:
  *
  *   Ledger App Boilerplate.
- *   (c) 2020 Ledger SAS.
+ *   (c) 2023 Ledger SAS.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,34 +21,32 @@
  *  limitations under the License.
  *****************************************************************************/
 
-#include "display.h"
+#include "ui/display.h"
 
 #include <stdbool.h>  // bool
 #include <string.h>   // memset
 
-#include "os.h"
-#include "ux.h"
 #include "glyphs.h"
 
+#include "bip32.h"
+#include "buffer.h"
+#include "format.h"
+#include "io.h"
+#include "os.h"
+#include "ux.h"
+
+#include "address.h"
 #include "constants.h"
-#include "ctx.h"
-#include "../globals.h"
-#include "../io.h"
-#include "../sw.h"
+#include "globals.h"
+#include "sw.h"
+
 #include "action/validate.h"
-#include "../transaction/types.h"
-#include "../common/bip32.h"
-#include "../common/buffer.h"
-#include "../common/format.h"
-#include "../address.h"
-#include "transactions/multi_signature_registration_display.h"
-#include "transactions/ipfs_display.h"
-#include "transactions/transfer_display.h"
-#include "transactions/htlc_lock_display.h"
-#include "transactions/htlc_claim_display.h"
-#include "transactions/htlc_refund_display.h"
-#include "transactions/burn_display.h"
-#include "transactions/vote_display.h"
+#include "transaction/types.h"
+#include "ui/ctx.h"
+#include "ui/transactions/ipfs_display.h"
+#include "ui/transactions/transfer_display.h"
+#include "ui/transactions/burn_display.h"
+#include "ui/transactions/vote_display.h"
 
 ctx_t display_context = {0};
 
