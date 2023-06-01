@@ -27,7 +27,7 @@ CTEST_OUTPUT_ON_FAILURE=1 make -C build test
 
 ## Generate code coverage
 
-Just execute in `tests/unit-tests` folder
+Just execute in `unit-tests` folder
 
 ```
 ./gen_coverage.sh
