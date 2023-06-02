@@ -113,10 +113,6 @@ parser_status_e transaction_deserialise_common(buffer_t *buf, transaction_t *tx)
         return WRONG_LENGTH_ERROR;
     }
 
-    if (tx->memo_len > MEMO_MAX_LEN) {
-        return WRONG_LENGTH_ERROR;
-    }
-
     // memo
     tx->memo = (uint8_t *) (buf->ptr + buf->offset);
 

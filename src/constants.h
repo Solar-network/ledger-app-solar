@@ -46,11 +46,6 @@
 #define HASH_64_LEN 64
 
 /**
- * Max length for memo.
- */
-#define MEMO_MAX_LEN 255
-
-/**
  * Solar Mainnet Network Byte
  */
 #define NETWORK_SOLAR_MAINNET 0x3F  // 63
