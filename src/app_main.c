@@ -23,6 +23,7 @@
 #include "sw.h"
 #include "ux.h"
 
+#include "context.h"
 #include "globals.h"
 #include "types.h"
 
@@ -45,7 +46,7 @@ void app_main() {
     ui_menu_main();
 
     // Reset context
-    explicit_bzero(&G_context, sizeof(G_context));
+    reset_app_context();
 
     for (;;) {
         BEGIN_TRY {
