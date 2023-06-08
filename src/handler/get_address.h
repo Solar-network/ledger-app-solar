@@ -1,17 +1,9 @@
-/*****************************************************************************
- *  Copyright (c) Solar Network <hello@solar.org>
- *
- *  This work is licensed under a Creative Commons Attribution-NoDerivatives
- *  4.0 International License.
- *****************************************************************************/
-
 #pragma once
 
-#include <stddef.h>   // size_t
 #include <stdbool.h>  // bool
 #include <stdint.h>   // uint*_t
 
-#include "../common/buffer.h"
+#include "buffer.h"
 
 /**
  * Handler for GET_ADDRESS command.

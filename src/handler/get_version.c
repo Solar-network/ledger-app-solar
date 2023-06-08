@@ -1,4 +1,11 @@
 /*****************************************************************************
+ *  Copyright (c) Solar Network <hello@solar.org>
+ *
+ *  This work is licensed under a Creative Commons Attribution-NoDerivatives
+ *  4.0 International License.
+ *
+ *****************************************************************************
+ *
  *  This work is licensed under a Creative Commons Attribution-NoDerivatives
  *  4.0 International License.
  *
@@ -6,7 +13,7 @@
  *  and permission notice:
  *
  *   Ledger App Boilerplate.
- *   (c) 2020 Ledger SAS.
+ *   (c) Ledger SAS.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,16 +28,18 @@
  *  limitations under the License.
  *****************************************************************************/
 
+#include "get_version.h"
+
 #include <stdint.h>  // uint*_t
 #include <limits.h>  // UINT8_MAX
 #include <assert.h>  // _Static_assert
 
-#include "get_version.h"
-#include "../constants.h"
-#include "../io.h"
-#include "../sw.h"
-#include "../types.h"
-#include "common/buffer.h"
+#include "io.h"
+#include "buffer.h"
+
+#include "constants.h"
+#include "sw.h"
+#include "types.h"
 
 int handler_get_version() {
     _Static_assert(APPVERSION_LEN == 3, "Length of (MAJOR || MINOR || PATCH) must be 3!");
@@ -41,11 +50,10 @@ int handler_get_version() {
     _Static_assert(PATCH_VERSION >= 0 && PATCH_VERSION <= UINT8_MAX,
                    "PATCH version must be between 0 and 255!");
 
-    return io_send_response(
-        &(const buffer_t){.ptr = (uint8_t[APPVERSION_LEN]){(uint8_t) MAJOR_VERSION,
-                                                           (uint8_t) MINOR_VERSION,
-                                                           (uint8_t) PATCH_VERSION},
-                          .size = APPVERSION_LEN,
-                          .offset = 0},
+    return io_send_response_pointer(
+        (const uint8_t *) &(uint8_t[APPVERSION_LEN]){(uint8_t) MAJOR_VERSION,
+                                                     (uint8_t) MINOR_VERSION,
+                                                     (uint8_t) PATCH_VERSION},
+        APPVERSION_LEN,
         SW_OK);
 }

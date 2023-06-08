@@ -5,14 +5,21 @@
  *  4.0 International License.
  *****************************************************************************/
 
-#include <stdio.h>
-#include "transfer_display.h"
-#include "types.h"
-#include "constants.h"
+#include "ui/transactions/transfer_display.h"
+
+#include <stdio.h>   // snprintf
+#include <stdint.h>  // uint*_t
+
+#include "buffer.h"
+#include "format.h"
+#include "read.h"
+
 #include "address.h"
-#include "../../common/buffer.h"
-#include "../../common/format.h"
-#include "../../common/read.h"
+#include "constants.h"
+
+#include "transaction/transaction_utils.h"
+#include "transaction/types.h"
+#include "ui/ctx.h"
 
 bool transfer_type_display(transaction_t *tx, char title[], char text[], uint16_t step) {
     // transfers (amount + recipient)

@@ -8,10 +8,10 @@
 
 ## Development
 
-Visit the [Ledger Developer Portal](https://developers.ledger.com/docs/nano-app/start-here) to learn more about Nano app development and the development environment, or skip to the following links for specific instructions on building and loading a Nano app:
+Visit the [Ledger Developer Portal](https://developers.ledger.com/docs/embedded-app/introduction) to learn more about embedded apps and the app development environment, or visit the following links for specific instructions on building and loading an embedded app:
 
-- [Build the application](https://developers.ledger.com/docs/nano-app/build)
-- [Load the application](https://developers.ledger.com/docs/nano-app/load)
+- [Build the Application](https://developers.ledger.com/docs/embedded-app/build-app)
+- Load the Application: [Linux](https://developers.ledger.com/docs/embedded-app/load-linux) | [Mac](https://developers.ledger.com/docs/embedded-app/load-mac)
 
 ## Documentation
 

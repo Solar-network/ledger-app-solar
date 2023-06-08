@@ -1,7 +1,5 @@
 #pragma once
 
-#include "os.h"
-
 /**
  * Handler for GET_APP_NAME command. Send APDU response with ASCII
  * encoded name of the application.

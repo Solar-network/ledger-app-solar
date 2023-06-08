@@ -1,4 +1,11 @@
 /*****************************************************************************
+ *  Copyright (c) Solar Network <hello@solar.org>
+ *
+ *  This work is licensed under a Creative Commons Attribution-NoDerivatives
+ *  4.0 International License.
+ *
+ *****************************************************************************
+ *
  *  This work is licensed under a Creative Commons Attribution-NoDerivatives
  *  4.0 International License.
  *
@@ -6,7 +13,7 @@
  *  and permission notice:
  *
  *   Ledger App Boilerplate.
- *   (c) 2020 Ledger SAS.
+ *   (c) Ledger SAS.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,19 +28,18 @@
  *  limitations under the License.
  *****************************************************************************/
 
-#include <stdint.h>  // uint*_t
-
 #include "get_app_name.h"
-#include "../constants.h"
-#include "../io.h"
-#include "../sw.h"
-#include "../types.h"
-#include "common/buffer.h"
+
+#include "buffer.h"
+#include "io.h"
+#include "os.h"
+
+#include "constants.h"
+#include "sw.h"
+#include "types.h"
 
 int handler_get_app_name() {
-    _Static_assert(APPNAME_LEN < MAX_APPNAME_LEN, "APPNAME must be at most 64 characters!");
+    _Static_assert(APPNAME_LEN < APPNAME_MAX_LEN, "APPNAME must be at most 64 characters!");
 
-    buffer_t rdata = {.ptr = (uint8_t *) PIC(APPNAME), .size = APPNAME_LEN, .offset = 0};
-
-    return io_send_response(&rdata, SW_OK);
+    return io_send_response_pointer(PIC(APPNAME), APPNAME_LEN, SW_OK);
 }

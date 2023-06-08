@@ -5,8 +5,9 @@
  *  4.0 International License.
  *****************************************************************************/
 
-#include <ctx.h>
-#include "../transaction/types.h"
+#include "ui/ctx.h"
+
+#include "transaction/types.h"
 
 bool context_get_next(ctx_t *ctx, transaction_t *tx, char title[], char text[]) {
     bool result = ctx->f(tx, title, text, ctx->offset);

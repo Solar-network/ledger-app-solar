@@ -1,4 +1,11 @@
 /*****************************************************************************
+ *  Copyright (c) Solar Network <hello@solar.org>
+ *
+ *  This work is licensed under a Creative Commons Attribution-NoDerivatives
+ *  4.0 International License.
+ *
+ *****************************************************************************
+ *
  *  This work is licensed under a Creative Commons Attribution-NoDerivatives
  *  4.0 International License.
  *
@@ -6,7 +13,7 @@
  *  and permission notice:
  *
  *   Ledger App Boilerplate.
- *   (c) 2020 Ledger SAS.
+ *   (c) Ledger SAS.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,18 +28,18 @@
  *  limitations under the License.
  *****************************************************************************/
 
-#include <stdint.h>   // uint*_t
-#include <stddef.h>   // size_t
-#include <stdbool.h>  // bool
-#include <string.h>   // memmove
-
-#include "os.h"
-#include "cx.h"
-
 #include "address.h"
 
+#include <stdbool.h>  // bool
+#include <stddef.h>   // size_t
+#include <stdint.h>   // uint*_t
+#include <string.h>   // memmove
+
+#include "base58.h"
+#include "cx.h"
+#include "os.h"
+
 #include "constants.h"
-#include "common/base58.h"
 
 bool address_from_pubkey(const uint8_t public_key[static 33],
                          uint8_t *out,
@@ -63,7 +70,10 @@ void crypto_get_checksum(const uint8_t *in, size_t in_len, uint8_t out[static 4]
 }
 
 int base58_encode_address(const uint8_t *in, size_t in_len, char *out, size_t out_len) {
-    uint8_t tmp[in_len + 4 + 1];  // version + max_in_len + checksum + null-byte
+    if (in_len != ADDRESS_HASH_LEN) {
+        return -1;
+    }
+    uint8_t tmp[ADDRESS_HASH_LEN + 4 + 1];  // ... + checksum + null-byte
 
     memcpy(tmp, in, in_len);
     crypto_get_checksum(tmp, in_len, tmp + in_len);

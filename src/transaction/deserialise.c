@@ -1,4 +1,11 @@
 /*****************************************************************************
+ *  Copyright (c) Solar Network <hello@solar.org>
+ *
+ *  This work is licensed under a Creative Commons Attribution-NoDerivatives
+ *  4.0 International License.
+ *
+ *****************************************************************************
+ *
  *  This work is licensed under a Creative Commons Attribution-NoDerivatives
  *  4.0 International License.
  *
@@ -6,7 +13,7 @@
  *  and permission notice:
  *
  *   Ledger App Boilerplate.
- *   (c) 2020 Ledger SAS.
+ *   (c) 2023 Ledger SAS.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,10 +29,16 @@
  *****************************************************************************/
 
 #include "deserialise.h"
-#include "utils.h"
-#include "types.h"
-#include "../constants.h"
-#include "../common/buffer.h"
+
+#include <stdint.h>  // uint*_t
+
+#include "buffer.h"
+
+#include "constants.h"
+
+#include "transaction/errors.h"
+#include "transaction/transaction_utils.h"
+#include "transaction/types.h"
 
 parser_status_e transaction_deserialise(buffer_t *buf, transaction_t *tx) {
     parser_status_e parse_common = transaction_deserialise_common(buf, tx);
@@ -79,7 +92,7 @@ parser_status_e transaction_deserialise_common(buffer_t *buf, transaction_t *tx)
     }
 
     // nonce
-    if (!buffer_seek_cur(buf, NONCE_LENGTH)) {
+    if (!buffer_seek_cur(buf, sizeof(uint64_t))) {
         return WRONG_LENGTH_ERROR;
     }
 
@@ -129,18 +142,10 @@ parser_status_e transaction_deserialise_core_asset(buffer_t *buf,
         }
     } else if (typeGroup == TYPEGROUP_CORE) {
         switch (type) {
-            case MULTISIGNATURE_REGISTRATION:
-                return multisignature_type_deserialise(buf, &tx->Multisignature);
             case IPFS:
                 return ipfs_type_deserialise(buf, &tx->Ipfs);
             case TRANSFER:
                 return transfer_type_deserialise(buf, &tx->Transfer);
-            case HTLC_LOCK:
-                return htlc_lock_type_deserialise(buf, &tx->Htlc_lock);
-            case HTLC_CLAIM:
-                return htlc_claim_type_deserialise(buf, &tx->Htlc_claim);
-            case HTLC_REFUND:
-                return htlc_refund_type_deserialise(buf, &tx->Htlc_refund);
             default:
                 return TYPE_PARSING_ERROR;
         }
@@ -152,7 +157,7 @@ parser_status_e transaction_deserialise_core_asset(buffer_t *buf,
 parser_status_e message_deserialise(buffer_t *buf, transaction_t *tx) {
     // message length
     if (!buffer_read_u16(buf, &tx->message_length, LE) || tx->message_length < 1 ||
-        tx->message_length > MAX_TRANSACTION_LEN - 3) {
+        tx->message_length > TRANSACTION_MAX_LEN - 3) {
         return WRONG_LENGTH_ERROR;
     }
 

@@ -6,7 +6,7 @@
  *  and permission notice:
  *
  *   Ledger App Boilerplate.
- *   (c) 2020 Ledger SAS.
+ *   (c) 2023 Ledger SAS.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,12 +21,14 @@
  *  limitations under the License.
  *****************************************************************************/
 
-#include "os.h"
-#include "ux.h"
+#include "ui/menu.h"
+
 #include "glyphs.h"
 
-#include "../globals.h"
-#include "menu.h"
+#include "os.h"
+#include "ux.h"
+
+#include "globals.h"
 
 UX_STEP_NOCB(ux_menu_ready_step, pnn, {&C_solar_logo, "Solar", "is ready"});
 UX_STEP_NOCB(ux_menu_version_step, bn, {"Version", APPVERSION});
@@ -53,7 +55,7 @@ void ui_menu_main() {
     ux_flow_init(0, ux_menu_main_flow, NULL);
 }
 
-UX_STEP_NOCB(ux_menu_info_step, bn, {"Solar App", "(c) 2022 Solar"});
+UX_STEP_NOCB(ux_menu_info_step, bn, {"Solar App", "(c) Solar Network"});
 UX_STEP_CB(ux_menu_back_step, pb, ui_menu_main(), {&C_icon_back, "Back"});
 
 // FLOW for the about submenu:

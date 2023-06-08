@@ -1,26 +1,3 @@
-/*****************************************************************************
- *  This work is licensed under a Creative Commons Attribution-NoDerivatives
- *  4.0 International License.
- *
- *  This software also incorporates work covered by the following copyright
- *  and permission notice:
- *
- *   Ledger App Boilerplate.
- *   (c) 2020 Ledger SAS.
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- *****************************************************************************/
-
 #pragma once
 
 /**
@@ -36,7 +13,7 @@
  */
 #define SW_WRONG_P1P2 0x6A86
 /**
- * Status word for either wrong Lc or lenght of APDU command less than 5.
+ * Status word for either wrong Lc or length of APDU command less than 5.
  */
 #define SW_WRONG_DATA_LENGTH 0x6A87
 /**
@@ -48,7 +25,7 @@
  */
 #define SW_CLA_NOT_SUPPORTED 0x6E00
 /**
- * Status word for wrong reponse length (buffer too small or too big).
+ * Status word for wrong response length (buffer too small or too big).
  */
 #define SW_WRONG_RESPONSE_LENGTH 0xB000
 /**

@@ -1,4 +1,11 @@
 /*****************************************************************************
+ *  Copyright (c) Solar Network <hello@solar.org>
+ *
+ *  This work is licensed under a Creative Commons Attribution-NoDerivatives
+ *  4.0 International License.
+ *
+ *****************************************************************************
+ *
  *  This work is licensed under a Creative Commons Attribution-NoDerivatives
  *  4.0 International License.
  *
@@ -6,7 +13,7 @@
  *  and permission notice:
  *
  *   Ledger App Boilerplate.
- *   (c) 2020 Ledger SAS.
+ *   (c) Ledger SAS.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -28,18 +35,19 @@
 #include <stddef.h>   // size_t
 #include <string.h>   // memset, explicit_bzero
 
-#include "os.h"
+#include "buffer.h"
 #include "cx.h"
+#include "io.h"
+#include "os.h"
 
-#include "../globals.h"
-#include "../types.h"
-#include "../context.h"
-#include "../io.h"
-#include "../sw.h"
-#include "../crypto/crypto.h"
-#include "../common/buffer.h"
-#include "../ui/display.h"
-#include "../helper/send_response.h"
+#include "context.h"
+#include "globals.h"
+#include "types.h"
+#include "sw.h"
+
+#include "crypto/crypto.h"
+#include "helper/send_response.h"
+#include "ui/display.h"
 
 int handler_get_public_key(buffer_t *cdata, bool user_approval, bool use_chain_code) {
     reset_app_context();

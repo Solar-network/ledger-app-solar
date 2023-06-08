@@ -1,4 +1,11 @@
 /*****************************************************************************
+ *  Copyright (c) Solar Network <hello@solar.org>
+ *
+ *  This work is licensed under a Creative Commons Attribution-NoDerivatives
+ *  4.0 International License.
+ *
+ *****************************************************************************
+ *
  *  This work is licensed under a Creative Commons Attribution-NoDerivatives
  *  4.0 International License.
  *
@@ -6,7 +13,7 @@
  *  and permission notice:
  *
  *   Ledger App Boilerplate.
- *   (c) 2020 Ledger SAS.
+ *   (c) 2023 Ledger SAS.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,34 +28,32 @@
  *  limitations under the License.
  *****************************************************************************/
 
-#include "display.h"
+#include "ui/display.h"
 
 #include <stdbool.h>  // bool
 #include <string.h>   // memset
 
-#include "os.h"
-#include "ux.h"
 #include "glyphs.h"
 
+#include "bip32.h"
+#include "buffer.h"
+#include "format.h"
+#include "io.h"
+#include "os.h"
+#include "ux.h"
+
+#include "address.h"
 #include "constants.h"
-#include "ctx.h"
-#include "../globals.h"
-#include "../io.h"
-#include "../sw.h"
+#include "globals.h"
+#include "sw.h"
+
 #include "action/validate.h"
-#include "../transaction/types.h"
-#include "../common/bip32.h"
-#include "../common/buffer.h"
-#include "../common/format.h"
-#include "../address.h"
-#include "transactions/multi_signature_registration_display.h"
-#include "transactions/ipfs_display.h"
-#include "transactions/transfer_display.h"
-#include "transactions/htlc_lock_display.h"
-#include "transactions/htlc_claim_display.h"
-#include "transactions/htlc_refund_display.h"
-#include "transactions/burn_display.h"
-#include "transactions/vote_display.h"
+#include "transaction/types.h"
+#include "ui/ctx.h"
+#include "ui/transactions/ipfs_display.h"
+#include "ui/transactions/transfer_display.h"
+#include "ui/transactions/burn_display.h"
+#include "ui/transactions/vote_display.h"
 
 ctx_t display_context = {0};
 
@@ -266,7 +271,7 @@ void display_next_state(bool is_upper_delimiter) {
     }
 }
 
-// Upper delimeter step
+// Upper delimiter step
 UX_STEP_INIT(step_upper_delimiter, NULL, NULL, { display_next_state(true); });
 
 // general dynamic step
@@ -277,7 +282,7 @@ UX_STEP_NOCB(ux_display_general,
                  .text = g_current_text,
              });
 
-// Lower delimeter step
+// Lower delimiter step
 UX_STEP_INIT(step_lower_delimiter, NULL, NULL, { display_next_state(false); });
 
 // FLOW to display transaction:
@@ -326,12 +331,6 @@ int ui_display_transaction() {
         }
     } else {
         switch (G_context.tx_info.transaction.type) {
-            case MULTISIGNATURE_REGISTRATION: {
-                snprintf(g_transaction_name, sizeof(g_transaction_name), "%s", "Multisignature");
-
-                display_context.f = &multisignature_type_display;
-                break;
-            }
             case IPFS: {
                 // First screen
                 snprintf(g_transaction_name, sizeof(g_transaction_name), "%s", "IPFS");
@@ -343,27 +342,6 @@ int ui_display_transaction() {
                 snprintf(g_transaction_name, sizeof(g_transaction_name), "%s", "Transfer");
 
                 display_context.f = &transfer_type_display;
-                break;
-            }
-            case HTLC_LOCK: {
-                // First screen
-                snprintf(g_transaction_name, sizeof(g_transaction_name), "%s", "HTLC Lock");
-
-                display_context.f = &htlc_lock_type_display;
-                break;
-            }
-            case HTLC_CLAIM: {
-                // First screen
-                snprintf(g_transaction_name, sizeof(g_transaction_name), "%s", "HTLC Claim");
-
-                display_context.f = &htlc_claim_type_display;
-                break;
-            }
-            case HTLC_REFUND: {
-                // First screen
-                snprintf(g_transaction_name, sizeof(g_transaction_name), "%s", "HTLC Refund");
-
-                display_context.f = &htlc_refund_type_display;
                 break;
             }
             default:

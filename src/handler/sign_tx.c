@@ -1,4 +1,11 @@
 /*****************************************************************************
+ *  Copyright (c) Solar Network <hello@solar.org>
+ *
+ *  This work is licensed under a Creative Commons Attribution-NoDerivatives
+ *  4.0 International License.
+ *
+ *****************************************************************************
+ *
  *  This work is licensed under a Creative Commons Attribution-NoDerivatives
  *  4.0 International License.
  *
@@ -6,7 +13,7 @@
  *  and permission notice:
  *
  *   Ledger App Boilerplate.
- *   (c) 2020 Ledger SAS.
+ *   (c) Ledger SAS.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,23 +28,26 @@
  *  limitations under the License.
  *****************************************************************************/
 
+#include "sign_tx.h"
+
 #include <stdint.h>   // uint*_t
 #include <stdbool.h>  // bool
 #include <stddef.h>   // size_t
 #include <string.h>   // memset, explicit_bzero
 
-#include "os.h"
 #include "cx.h"
+#include "os.h"
+#include "sw.h"
 
-#include "sign_tx.h"
-#include "../sw.h"
-#include "../globals.h"
-#include "../context.h"
-#include "../crypto/crypto.h"
-#include "../ui/display.h"
-#include "../common/buffer.h"
-#include "../transaction/types.h"
-#include "../transaction/deserialise.h"
+#include "buffer.h"
+
+#include "context.h"
+#include "crypto.h"
+#include "globals.h"
+
+#include "transaction/deserialise.h"
+#include "transaction/types.h"
+#include "ui/display.h"
 
 int handler_sign_tx(buffer_t *cdata, uint8_t chunk, bool more, bool is_message) {
     if (chunk == 0) {  // first APDU, parse BIP32 path
@@ -71,7 +81,7 @@ int handler_sign_tx(buffer_t *cdata, uint8_t chunk, bool more, bool is_message) 
         G_context.req_num++;
 
         if (more) {  // more APDUs with transaction part
-            if (G_context.tx_info.raw_tx_len + cdata->size > MAX_TRANSACTION_LEN ||  //
+            if (G_context.tx_info.raw_tx_len + cdata->size > TRANSACTION_MAX_LEN ||  //
                 cdata->size < UINT8_MAX ||                                           //
                 !buffer_move(cdata,
                              G_context.tx_info.raw_tx + G_context.tx_info.raw_tx_len,
@@ -83,7 +93,7 @@ int handler_sign_tx(buffer_t *cdata, uint8_t chunk, bool more, bool is_message) 
 
             return io_send_sw(SW_OK);
         } else {  // last APDU, let's parse and sign
-            if (G_context.tx_info.raw_tx_len + cdata->size > MAX_TRANSACTION_LEN ||  //
+            if (G_context.tx_info.raw_tx_len + cdata->size > TRANSACTION_MAX_LEN ||  //
                 !buffer_move(cdata,
                              G_context.tx_info.raw_tx + G_context.tx_info.raw_tx_len,
                              cdata->size)) {

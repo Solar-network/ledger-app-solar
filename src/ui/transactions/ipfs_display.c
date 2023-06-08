@@ -5,13 +5,21 @@
  *  4.0 International License.
  *****************************************************************************/
 
-#include <stdio.h>
-#include "ipfs_display.h"
-#include "types.h"
+#include "ui/transactions/ipfs_display.h"
+
+#include <stdbool.h>  // bool
+#include <stdint.h>   // uint*_t
+#include <stdio.h>    // snprintf
+
+#include "base58.h"
+#include "buffer.h"
+#include "format.h"
+
 #include "constants.h"
-#include "../../common/buffer.h"
-#include "../../common/format.h"
-#include "../../common/base58.h"
+
+#include "transaction/transaction_utils.h"
+#include "transaction/types.h"
+#include "ui/ctx.h"
 
 bool ipfs_type_display(transaction_t *tx, char title[], char text[], uint16_t step) {
     switch (step) {

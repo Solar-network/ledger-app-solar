@@ -1,15 +1,9 @@
-/*****************************************************************************
- *  Copyright (c) Solar Network <hello@solar.org>
- *
- *  This work is licensed under a Creative Commons Attribution-NoDerivatives
- *  4.0 International License.
- *****************************************************************************/
-
 #pragma once
 
-#include <stdbool.h>
-#include "../../transaction/types.h"
-#include "../ctx.h"
+#include <stdbool.h>  // bool
+#include <stdint.h>   // uint*_t
+
+#include "transaction/types.h"
 
 /**
  * Produce content for specific transaction.

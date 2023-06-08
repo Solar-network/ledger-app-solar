@@ -1,14 +1,10 @@
-/*****************************************************************************
- *  Copyright (c) Solar Network <hello@solar.org>
- *
- *  This work is licensed under a Creative Commons Attribution-NoDerivatives
- *  4.0 International License.
- *****************************************************************************/
-
 #pragma once
 
-#include "../errors.h"
-#include "../../common/buffer.h"
+#include <stdint.h>  // uint*_t
+
+#include "buffer.h"
+
+#include "transaction/errors.h"
 
 #define MIN_NUM_VOTES       0
 #define MAX_NUM_VOTES       53

@@ -1,14 +1,8 @@
-/*****************************************************************************
- *  Copyright (c) Solar Network <hello@solar.org>
- *
- *  This work is licensed under a Creative Commons Attribution-NoDerivatives
- *  4.0 International License.
- *****************************************************************************/
-
 #pragma once
 
-#include "../errors.h"
-#include "../../common/buffer.h"
+#include "buffer.h"
+
+#include "transaction/errors.h"
 
 typedef struct {
     uint64_t amount;  /// amount (8 bytes)

@@ -1,4 +1,11 @@
 /*****************************************************************************
+ *  Copyright (c) Solar Network <hello@solar.org>
+ *
+ *  This work is licensed under a Creative Commons Attribution-NoDerivatives
+ *  4.0 International License.
+ *
+ *****************************************************************************
+ *
  *  This work is licensed under a Creative Commons Attribution-NoDerivatives
  *  4.0 International License.
  *
@@ -6,7 +13,7 @@
  *  and permission notice:
  *
  *   Ledger App Boilerplate.
- *   (c) 2020 Ledger SAS.
+ *   (c) Ledger SAS.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,16 +28,19 @@
  *  limitations under the License.
  *****************************************************************************/
 
+#include "ui/action/validate.h"
+
 #include <stdbool.h>  // bool
 
-#include "validate.h"
-#include "../menu.h"
-#include "../../sw.h"
-#include "../../io.h"
-#include "../../crypto/crypto.h"
-#include "../../globals.h"
-#include "../../context.h"
-#include "../../helper/send_response.h"
+#include "io.h"
+
+#include "context.h"
+#include "globals.h"
+#include "sw.h"
+
+#include "crypto/crypto.h"
+#include "helper/send_response.h"
+#include "ui/menu.h"
 
 void ui_action_validate_pubkey(bool choice) {
     if (choice) {

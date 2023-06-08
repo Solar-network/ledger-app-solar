@@ -1,4 +1,11 @@
 /*****************************************************************************
+ *  Copyright (c) Solar Network <hello@solar.org>
+ *
+ *  This work is licensed under a Creative Commons Attribution-NoDerivatives
+ *  4.0 International License.
+ *
+ *****************************************************************************
+ *
  *  This work is licensed under a Creative Commons Attribution-NoDerivatives
  *  4.0 International License.
  *
@@ -6,7 +13,7 @@
  *  and permission notice:
  *
  *   Ledger App Boilerplate.
- *   (c) 2020 Ledger SAS.
+ *   (c) Ledger SAS.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,20 +28,23 @@
  *  limitations under the License.
  *****************************************************************************/
 
+#include "apdu/dispatcher.h"
+
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "dispatcher.h"
-#include "../constants.h"
-#include "../types.h"
-#include "../io.h"
-#include "../sw.h"
-#include "../common/buffer.h"
-#include "../handler/get_version.h"
-#include "../handler/get_app_name.h"
-#include "../handler/get_public_key.h"
-#include "../handler/get_address.h"
-#include "../handler/sign_tx.h"
+#include "buffer.h"
+#include "io.h"
+
+#include "constants.h"
+#include "sw.h"
+#include "types.h"
+
+#include "handler/get_version.h"
+#include "handler/get_app_name.h"
+#include "handler/get_public_key.h"
+#include "handler/get_address.h"
+#include "handler/sign_tx.h"
 
 int apdu_dispatcher(const command_t *cmd) {
     if (cmd->cla != CLA) {
