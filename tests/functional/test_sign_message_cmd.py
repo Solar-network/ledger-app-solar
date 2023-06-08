@@ -25,7 +25,7 @@ def test_sign_message_short(firmware, backend, navigator, test_name):
     client = SolarCommandSender(backend)
 
     rapdu = client.get_public_key(path=PATH_MAINNET)
-    _, public_key, _, _ = unpack_get_public_key_response(rapdu.data)
+    _, public_key = unpack_get_public_key_response(rapdu.data)
 
     with client.sign_message(path=PATH_MAINNET, message=MESSAGE_SHORT):
         # if firmware.device.startswith("nano"):
@@ -54,7 +54,7 @@ def test_sign_message_long(firmware, backend, navigator, test_name):
 
     # First we need to get the public key of the device in order to build the transaction
     rapdu = client.get_public_key(path=PATH_MAINNET)
-    _, public_key, _, _ = unpack_get_public_key_response(rapdu.data)
+    _, public_key = unpack_get_public_key_response(rapdu.data)
 
     with client.sign_message(path=PATH_MAINNET, message=MESSAGE_LONG):
         # if firmware.device.startswith("nano"):

@@ -35,7 +35,7 @@ def test_sign_transaction_ipfs(firmware, backend, navigator, test_name):
     client = SolarCommandSender(backend)
 
     rapdu = client.get_public_key(path=PATH_MAINNET)
-    _, public_key, _, _ = unpack_get_public_key_response(rapdu.data)
+    _, public_key = unpack_get_public_key_response(rapdu.data)
 
     ipfs_transaction = Ipfs(
         nonce=1,
@@ -72,7 +72,7 @@ def test_sign_transaction_transfer(firmware, backend, navigator, test_name):
     client = SolarCommandSender(backend)
 
     rapdu = client.get_public_key(path=PATH_MAINNET)
-    _, public_key, _, _ = unpack_get_public_key_response(rapdu.data)
+    _, public_key = unpack_get_public_key_response(rapdu.data)
 
     transfer_transaction = Transfer(
         nonce=2,
@@ -140,7 +140,7 @@ def test_sign_transaction_burn(firmware, backend, navigator, test_name):
     client = SolarCommandSender(backend)
 
     rapdu = client.get_public_key(path=PATH_MAINNET)
-    _, public_key, _, _ = unpack_get_public_key_response(rapdu.data)
+    _, public_key = unpack_get_public_key_response(rapdu.data)
 
     burn_transaction = Burn(
         nonce=3,
@@ -177,7 +177,7 @@ def test_sign_transaction_vote(firmware, backend, navigator, test_name):
     client = SolarCommandSender(backend)
 
     rapdu = client.get_public_key(path=PATH_MAINNET)
-    _, public_key, _, _ = unpack_get_public_key_response(rapdu.data)
+    _, public_key = unpack_get_public_key_response(rapdu.data)
 
     vote_transaction = Vote(
         nonce=4,
@@ -214,7 +214,7 @@ def test_sign_transaction_vote_cancel(firmware, backend, navigator, test_name):
     client = SolarCommandSender(backend)
 
     rapdu = client.get_public_key(path=PATH_MAINNET)
-    _, public_key, _, _ = unpack_get_public_key_response(rapdu.data)
+    _, public_key = unpack_get_public_key_response(rapdu.data)
 
     cancel_vote_transaction = Vote(
         nonce=5,
@@ -250,7 +250,7 @@ def test_sign_transaction_type_group_invalid(firmware, backend, navigator, test_
     client = SolarCommandSender(backend)
 
     rapdu = client.get_public_key(path=PATH_MAINNET)
-    _, public_key, _, _ = unpack_get_public_key_response(rapdu.data)
+    _, public_key = unpack_get_public_key_response(rapdu.data)
 
     transaction = Transaction(
         typeGroup=3,
@@ -285,7 +285,7 @@ def test_sign_transaction_type_invalid(firmware, backend, navigator, test_name):
     client = SolarCommandSender(backend)
 
     rapdu = client.get_public_key(path=PATH_MAINNET)
-    _, public_key, _, _ = unpack_get_public_key_response(rapdu.data)
+    _, public_key = unpack_get_public_key_response(rapdu.data)
 
     transaction = Transaction(
         typeGroup=20,
@@ -319,7 +319,7 @@ def test_sign_transfer_limit_exceeded(firmware, backend, navigator, test_name):
     client = SolarCommandSender(backend)
 
     rapdu = client.get_public_key(path=PATH_MAINNET)
-    _, public_key, _, _ = unpack_get_public_key_response(rapdu.data)
+    _, public_key = unpack_get_public_key_response(rapdu.data)
 
     transfer_transaction = Transfer(
         nonce=2,
@@ -355,7 +355,7 @@ def test_sign_transfer_version_unsupported(firmware, backend, navigator, test_na
     client = SolarCommandSender(backend)
 
     rapdu = client.get_public_key(path=PATH_MAINNET)
-    _, public_key, _, _ = unpack_get_public_key_response(rapdu.data)
+    _, public_key = unpack_get_public_key_response(rapdu.data)
 
     transfer_transaction = Transfer(
         version=2,
@@ -391,7 +391,7 @@ def test_sign_transfer_network_unsupported(firmware, backend, navigator, test_na
     client = SolarCommandSender(backend)
 
     rapdu = client.get_public_key(path=PATH_MAINNET)
-    _, public_key, _, _ = unpack_get_public_key_response(rapdu.data)
+    _, public_key = unpack_get_public_key_response(rapdu.data)
 
     transfer_transaction = Transfer(
         network=62,
@@ -427,7 +427,7 @@ def test_sign_transfer_starting_byte_invalid(firmware, backend, navigator, test_
     client = SolarCommandSender(backend)
 
     rapdu = client.get_public_key(path=PATH_MAINNET)
-    _, public_key, _, _ = unpack_get_public_key_response(rapdu.data)
+    _, public_key = unpack_get_public_key_response(rapdu.data)
 
     transfer_transaction = Transfer(
         startingByte=0xFE,
@@ -463,7 +463,7 @@ def test_sign_transfer_memo_invalid(firmware, backend, navigator, test_name):
     client = SolarCommandSender(backend)
 
     rapdu = client.get_public_key(path=PATH_MAINNET)
-    _, public_key, _, _ = unpack_get_public_key_response(rapdu.data)
+    _, public_key = unpack_get_public_key_response(rapdu.data)
 
     transfer_transaction = Transfer(
         nonce=2,
@@ -520,7 +520,7 @@ def test_sign_transfer_vote_sum_invalid(firmware, backend, navigator, test_name)
     client = SolarCommandSender(backend)
 
     rapdu = client.get_public_key(path=PATH_MAINNET)
-    _, public_key, _, _ = unpack_get_public_key_response(rapdu.data)
+    _, public_key = unpack_get_public_key_response(rapdu.data)
 
     vote_transaction = Vote(
         nonce=6,
