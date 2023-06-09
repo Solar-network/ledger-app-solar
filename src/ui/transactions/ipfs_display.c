@@ -25,7 +25,7 @@ bool ipfs_type_display(transaction_t *tx, char title[], char text[], uint16_t st
     switch (step) {
         case 0: {
             // IPFS hash
-            snprintf(title, MAX_TITLE_LEN, "%s", "Content ID");
+            snprintf(title, MAX_TITLE_LEN, "Content ID");
             char encoded[100] = {0};
             int base58_length = base58_encode(tx->core_asset.Ipfs.ipfs,
                                               tx->core_asset.Ipfs.ipfs_length,
@@ -36,7 +36,7 @@ bool ipfs_type_display(transaction_t *tx, char title[], char text[], uint16_t st
         }
         case 1: {
             // Fee
-            snprintf(title, MAX_TITLE_LEN, "%s", "Fee");
+            snprintf(title, MAX_TITLE_LEN, "Fee");
             format_amount(text,
                           MAX_TEXT_LEN,
                           tx->fee,
