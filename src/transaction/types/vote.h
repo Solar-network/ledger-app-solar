@@ -6,7 +6,6 @@
 
 #include "transaction/errors.h"
 
-#define MIN_NUM_VOTES       0
 #define MAX_NUM_VOTES       53
 #define MIN_USERNAME_LENGTH 1
 #define MAX_USERNAME_LENGTH 20

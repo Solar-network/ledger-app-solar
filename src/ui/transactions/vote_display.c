@@ -32,7 +32,7 @@ bool vote_type_display(transaction_t *tx, char title[], char text[], uint16_t st
         vote_search(tx->core_asset.Vote.votes, vote_count, tx->core_asset.Vote.vote_length, &asset);
 
         if (step % 2 == 0) {
-            // Prepare the vote screen
+            // Prepare the vote[n] screen
             snprintf(title,
                      MAX_TITLE_LEN,
                      "Vote (%d/%d)",
@@ -40,7 +40,7 @@ bool vote_type_display(transaction_t *tx, char title[], char text[], uint16_t st
                      tx->core_asset.Vote.vote_length);
             snprintf(text, MAX_TEXT_LEN, "%.*s", asset.username_length, asset.username);
         } else {
-            // Prepare the vote percentage screen
+            // Prepare the vote percentage[n] screen
             snprintf(title,
                      MAX_TITLE_LEN,
                      "Vote %% (%d/%d)",

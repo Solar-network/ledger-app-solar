@@ -1,8 +1,4 @@
-pytest
-btclib
-ragger[speculos]>=1.6.0
-ragger[ledgerwallet]>=1.6.0
-Jinja2==3.1.2
-Flask==2.1.2
-ecdsa>=0.16.1,<0.17.0
-pysha3>=1.0.0,<2.0.0
+pytest==7.3.1
+btclib==2023.2.3
+ragger[speculos]==1.8.2
+ragger[ledgerwallet]==1.8.2

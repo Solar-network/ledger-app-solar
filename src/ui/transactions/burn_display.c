@@ -23,7 +23,7 @@ bool burn_type_display(transaction_t *tx, char title[], char text[], uint16_t st
     switch (step) {
         case 0: {
             // Amount
-            snprintf(title, MAX_TITLE_LEN, "%s", "Amount");
+            snprintf(title, MAX_TITLE_LEN, "Amount");
             format_amount(text,
                           MAX_TEXT_LEN,
                           tx->core_asset.Burn.amount,
@@ -34,7 +34,7 @@ bool burn_type_display(transaction_t *tx, char title[], char text[], uint16_t st
         }
         case 1: {
             // Fee
-            snprintf(title, MAX_TITLE_LEN, "%s", "Fee");
+            snprintf(title, MAX_TITLE_LEN, "Fee");
             format_amount(text,
                           MAX_TEXT_LEN,
                           tx->fee,
