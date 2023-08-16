@@ -31,6 +31,8 @@
 #include <stdint.h>  // uint*_t
 #include <string.h>  // memset, explicit_bzero
 
+#include "crypto_helpers.h"
+
 #include "crypto.h"
 
 #include "globals.h"
@@ -39,30 +41,13 @@ int crypto_derive_private_key(cx_ecfp_private_key_t *private_key,
                               uint8_t chain_code[32],
                               const uint32_t *bip32_path,
                               uint8_t bip32_path_len) {
-    uint8_t raw_private_key[32] = {0};
-
-    BEGIN_TRY {
-        TRY {
-            // derive the seed with bip32_path
-            os_perso_derive_node_bip32(CX_CURVE_256K1,
-                                       bip32_path,
-                                       bip32_path_len,
-                                       raw_private_key,
-                                       chain_code);
-            // new private_key from raw
-            cx_ecfp_init_private_key(CX_CURVE_256K1,
-                                     raw_private_key,
-                                     sizeof(raw_private_key),
-                                     private_key);
-        }
-        CATCH_OTHER(e) {
-            THROW(e);
-        }
-        FINALLY {
-            explicit_bzero(&raw_private_key, sizeof(raw_private_key));
-        }
+    if (bip32_derive_init_privkey_256(CX_CURVE_256K1,
+                                      bip32_path,
+                                      bip32_path_len,
+                                      private_key,
+                                      chain_code) != CX_OK) {
+        return -1;
     }
-    END_TRY;
 
     return 0;
 }
@@ -71,7 +56,9 @@ int crypto_init_public_key(cx_ecfp_private_key_t *private_key,
                            cx_ecfp_public_key_t *public_key,
                            uint8_t raw_public_key[33]) {
     // generate corresponding public key
-    cx_ecfp_generate_pair(CX_CURVE_256K1, public_key, private_key, 1);
+    if (cx_ecfp_generate_pair_no_throw(CX_CURVE_256K1, public_key, private_key, true) != CX_OK) {
+        return -1;
+    }
 
     raw_public_key[0] = ((*(public_key->W + 64) & 1) ? 0x03 : 0x02);
     memmove(raw_public_key + 1, public_key->W + 1, 32);
@@ -82,31 +69,17 @@ int crypto_init_public_key(cx_ecfp_private_key_t *private_key,
 int crypto_sign_message() {
     cx_ecfp_private_key_t private_key = {0};
     size_t signature_len = sizeof(G_context.tx_info.signature);
-    cx_err_t error = CX_INTERNAL_ERROR;
 
     // derive private key according to BIP32 path
     crypto_derive_private_key(&private_key, NULL, G_context.bip32_path, G_context.bip32_path_len);
 
-    BEGIN_TRY {
-        TRY {
-            error = cx_ecschnorr_sign_no_throw(&private_key,
-                                               CX_ECSCHNORR_BIP0340 | CX_RND_TRNG,
-                                               CX_SHA256,
-                                               G_context.tx_info.m_hash,
-                                               sizeof(G_context.tx_info.m_hash),
-                                               G_context.tx_info.signature,
-                                               &signature_len);
-        }
-        CATCH_OTHER(e) {
-            THROW(e);
-        }
-        FINALLY {
-            explicit_bzero(&private_key, sizeof(private_key));
-        }
-    }
-    END_TRY;
-
-    if (error != CX_OK) {
+    if (cx_ecschnorr_sign_no_throw(&private_key,
+                                   CX_ECSCHNORR_BIP0340 | CX_RND_TRNG,
+                                   CX_SHA256,
+                                   G_context.tx_info.m_hash,
+                                   sizeof(G_context.tx_info.m_hash),
+                                   G_context.tx_info.signature,
+                                   &signature_len) != CX_OK) {
         return -1;
     }
 
