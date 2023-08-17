@@ -40,6 +40,7 @@
 #include "os.h"
 
 #include "constants.h"
+#include "sw.h"
 
 bool address_from_pubkey(const uint8_t public_key[static 33],
                          uint8_t *out,
@@ -52,9 +53,18 @@ bool address_from_pubkey(const uint8_t public_key[static 33],
         return false;
     }
 
-    cx_ripemd160_init(&ctx);
+    if (cx_ripemd160_init_no_throw(&ctx) != CX_OK) {
+        return false;
+    }
 
-    cx_hash((cx_hash_t *) &ctx, CX_LAST, public_key, PUBLIC_KEY_LEN, address, ADDRESS_HASH_LEN);
+    if (cx_hash_no_throw((cx_hash_t *) &ctx,
+                         CX_LAST,
+                         public_key,
+                         PUBLIC_KEY_LEN,
+                         address,
+                         ADDRESS_HASH_LEN) != CX_OK) {
+        return false;
+    }
 
     memmove(out + 1, address, ADDRESS_HASH_LEN - 1);
     out[0] = network;

@@ -9,6 +9,8 @@
 
 #include <string.h>  // explicit_bzero
 
+#include "os.h"  // PRINTF
+
 #include "globals.h"
 
 void reset_app_context() {

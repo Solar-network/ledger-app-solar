@@ -120,17 +120,19 @@ int handler_sign_tx(buffer_t *cdata, uint8_t chunk, bool more, bool is_message) 
             G_context.state = STATE_PARSED;
 
             cx_sha256_t sha256;
-            cx_sha256_init(&sha256);
-            cx_hash(&sha256.header,
-                    CX_LAST,
-                    (G_context.req_type == CONFIRM_MESSAGE) ? G_context.tx_info.raw_tx + 2
-                                                            : G_context.tx_info.raw_tx,
-                    (G_context.req_type == CONFIRM_MESSAGE) ? G_context.tx_info.raw_tx_len - 2
-                                                            : G_context.tx_info.raw_tx_len,
-                    G_context.tx_info.m_hash,
-                    sizeof(G_context.tx_info.m_hash));
 
-            PRINTF("Hash: %.*H\n", sizeof(G_context.tx_info.m_hash), G_context.tx_info.m_hash);
+            if (cx_sha256_init_no_throw(&sha256) != CX_OK) {
+                return io_send_sw(SW_TX_HASH_FAIL);
+            }
+
+            if (cx_hash_no_throw((cx_hash_t *) &sha256,
+                                 CX_LAST,
+                                 G_context.tx_info.raw_tx,
+                                 G_context.tx_info.raw_tx_len,
+                                 G_context.tx_info.m_hash,
+                                 HASH_32_LEN) != CX_OK) {
+                return io_send_sw(SW_TX_HASH_FAIL);
+            }
 
             if (G_context.req_type == CONFIRM_TRANSACTION) {
                 return ui_display_transaction();

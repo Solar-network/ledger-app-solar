@@ -20,14 +20,15 @@
 
 #include "io.h"
 #include "os.h"
-#include "sw.h"
 #include "ux.h"
 
 #include "context.h"
 #include "globals.h"
+#include "sw.h"
 #include "types.h"
 
 #include "apdu/dispatcher.h"
+
 #include "ui/menu.h"
 
 global_ctx_t G_context;
@@ -49,49 +50,32 @@ void app_main() {
     reset_app_context();
 
     for (;;) {
-        BEGIN_TRY {
-            TRY {
-                // Reset structured APDU command
-                memset(&cmd, 0, sizeof(cmd));
+        // Receive command bytes in G_io_apdu_buffer
+        if ((input_len = io_recv_command()) < 0) {
+            PRINTF("=> io_recv_command failure\n");
+            return;
+        }
 
-                // Receive command bytes in G_io_apdu_buffer
-                if ((input_len = io_recv_command()) < 0) {
-                    CLOSE_TRY;
-                    return;
-                }
+        // Parse APDU command from G_io_apdu_buffer
+        if (!apdu_parser(&cmd, G_io_apdu_buffer, input_len)) {
+            PRINTF("=> /!\\ BAD LENGTH: %.*H\n", input_len, G_io_apdu_buffer);
+            io_send_sw(SW_WRONG_DATA_LENGTH);
+            continue;
+        }
 
-                // Parse APDU command from G_io_apdu_buffer
-                if (!apdu_parser(&cmd, G_io_apdu_buffer, input_len)) {
-                    PRINTF("=> /!\\ BAD LENGTH: %.*H\n", input_len, G_io_apdu_buffer);
-                    io_send_sw(SW_WRONG_DATA_LENGTH);
-                    CLOSE_TRY;
-                    continue;
-                }
+        PRINTF("=> CLA=%02X | INS=%02X | P1=%02X | P2=%02X | Lc=%02X | CData=%.*H\n",
+               cmd.cla,
+               cmd.ins,
+               cmd.p1,
+               cmd.p2,
+               cmd.lc,
+               cmd.lc,
+               cmd.data);
 
-                PRINTF("=> CLA=%02X | INS=%02X | P1=%02X | P2=%02X | Lc=%02X | CData=%.*H\n",
-                       cmd.cla,
-                       cmd.ins,
-                       cmd.p1,
-                       cmd.p2,
-                       cmd.lc,
-                       cmd.lc,
-                       cmd.data);
-
-                // Dispatch structured APDU command to handler
-                if (apdu_dispatcher(&cmd) < 0) {
-                    CLOSE_TRY;
-                    return;
-                }
-            }
-            CATCH(EXCEPTION_IO_RESET) {
-                THROW(EXCEPTION_IO_RESET);
-            }
-            CATCH_OTHER(e) {
-                io_send_sw(e);
-            }
-            FINALLY {
-            }
-            END_TRY;
+        // Dispatch structured APDU command to handler
+        if (apdu_dispatcher(&cmd) < 0) {
+            PRINTF("=> apdu_dispatcher failure\n");
+            return;
         }
     }
 }
