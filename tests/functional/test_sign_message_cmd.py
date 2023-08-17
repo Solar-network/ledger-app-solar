@@ -45,7 +45,11 @@ def test_sign_message_short(firmware, backend, navigator, test_name):
         #                                               test_name)
     response = client.get_async_response().data
 
-    assert ssa.verify(MESSAGE_SHORT.encode("ascii"), public_key, response) is True
+    msg_short: bytes = b"".join(
+        [len(MESSAGE_SHORT).to_bytes(2, byteorder="little"), bytes(MESSAGE_SHORT, "ascii")]
+    )
+
+    assert ssa.verify(msg_short, public_key, response) is True
 
 
 # In this tests we check the behaviour of the device when asked to sign a long message
@@ -74,7 +78,11 @@ def test_sign_message_long(firmware, backend, navigator, test_name):
         #                                               test_name)
     response = client.get_async_response().data
 
-    assert ssa.verify(MESSAGE_LONG.encode("ascii"), public_key, response) is True
+    msg_long: bytes = b"".join(
+        [len(MESSAGE_LONG).to_bytes(2, byteorder="little"), bytes(MESSAGE_LONG, "ascii")]
+    )
+
+    assert ssa.verify(msg_long, public_key, response) is True
 
 
 # Message signature refused test
