@@ -77,8 +77,8 @@ For the `GET_VERSION` instruction, both P1 and P2 values are not used and should
 
 ```shell
 => e0a2000000
-<= 0101029000
-   # "1 1 2", 0x9000
+<= 0101039000
+   # "1 1 3", 0x9000
 ```
 
 ## GET_PUBLIC_KEY
