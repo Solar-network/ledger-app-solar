@@ -2,11 +2,13 @@
 src/glyphs.c
 src/glyphs.h
 bin/
+build/
 debug/
 dep/
 obj/
 
 # Unit tests and code coverage
+tests/functional/snapshots-tmp/
 tests/unit-tests/build/
 tests/unit-tests/coverage/
 tests/unit-tests/coverage.info
