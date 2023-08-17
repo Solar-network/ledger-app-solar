@@ -73,13 +73,17 @@ int crypto_sign_message() {
     // derive private key according to BIP32 path
     crypto_derive_private_key(&private_key, NULL, G_context.bip32_path, G_context.bip32_path_len);
 
-    if (cx_ecschnorr_sign_no_throw(&private_key,
-                                   CX_ECSCHNORR_BIP0340 | CX_RND_TRNG,
-                                   CX_SHA256,
-                                   G_context.tx_info.m_hash,
-                                   sizeof(G_context.tx_info.m_hash),
-                                   G_context.tx_info.signature,
-                                   &signature_len) != CX_OK) {
+    cx_err_t error = cx_ecschnorr_sign_no_throw(&private_key,
+                                                CX_ECSCHNORR_BIP0340 | CX_RND_TRNG,
+                                                CX_SHA256,
+                                                G_context.tx_info.m_hash,
+                                                sizeof(G_context.tx_info.m_hash),
+                                                G_context.tx_info.signature,
+                                                &signature_len);
+
+    explicit_bzero(&private_key, sizeof(private_key));
+
+    if (error != CX_OK) {
         return -1;
     }
 
