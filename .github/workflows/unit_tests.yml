@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - develop
   pull_request:
     branches:
       - main
@@ -14,13 +15,12 @@ jobs:
   job_unit_test:
     name: Unit test
     runs-on: ubuntu-latest
-
     container:
-      image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest
+      image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder-lite:3.22.1
 
     steps:
       - name: Clone
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.1.5
 
       - name: Build unit tests
         run: |
@@ -36,17 +36,17 @@ jobs:
           lcov --directory . -b "$(realpath build/)" --remove coverage.info '*/unit-tests/*' -o coverage.info && \
           genhtml coverage.info -o coverage
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4.3.3
         with:
           name: code-coverage
           path: tests/unit-tests/coverage
 
       - name: Upload to codecov.io
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v3.1.6
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./tests/unit-tests/coverage.info
+          fail_ci_if_error: true
+          files: ./tests/unit-tests/coverage.info
           flags: unittests
           name: codecov-app-solar
-          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true

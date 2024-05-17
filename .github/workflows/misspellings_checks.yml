@@ -21,10 +21,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Clone
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4.1.5
 
     - name: Check misspellings
-      uses: codespell-project/actions-codespell@v1
+      uses: codespell-project/actions-codespell@v2.0
       with:
         builtin: clear,rare
         check_filenames: true

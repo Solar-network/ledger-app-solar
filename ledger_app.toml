@@ -2,3 +2,7 @@
 build_directory = "./"
 sdk = "C"
 devices = ["nanos", "nanox", "nanos+"]
+
+[tests]
+unit_directory = "./tests/unit-tests/"
+pytest_directory = "./tests/functional"
