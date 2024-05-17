@@ -11,7 +11,7 @@
 
 #include "constants.h"
 
-#include "transaction/errors.h"
+#include "transaction/transaction_errors.h"
 
 parser_status_e transfer_type_deserialise(buffer_t *buf, transfer_transaction_asset_t *tx) {
     // length

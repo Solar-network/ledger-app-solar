@@ -13,7 +13,7 @@
 
 #include "constants.h"
 
-#include "transaction/errors.h"
+#include "transaction/transaction_errors.h"
 #include "transaction/transaction_utils.h"
 
 parser_status_e vote_type_deserialise(buffer_t *buf, vote_transaction_asset_t *tx) {

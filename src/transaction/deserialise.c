@@ -36,7 +36,7 @@
 
 #include "constants.h"
 
-#include "transaction/errors.h"
+#include "transaction/transaction_errors.h"
 #include "transaction/transaction_utils.h"
 #include "transaction/types.h"
 

@@ -11,7 +11,7 @@
 
 #include "constants.h"
 
-#include "transaction/errors.h"
+#include "transaction/transaction_errors.h"
 
 parser_status_e ipfs_type_deserialise(buffer_t *buf, ipfs_transaction_asset_t *tx) {
     // ipfs

@@ -11,7 +11,7 @@
 
 #include "constants.h"
 
-#include "transaction/errors.h"
+#include "transaction/transaction_errors.h"
 
 parser_status_e burn_type_deserialise(buffer_t *buf, burn_transaction_asset_t *tx) {
     // amount

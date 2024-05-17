@@ -2,7 +2,7 @@
 
 #include "buffer.h"
 
-#include "transaction/errors.h"
+#include "transaction/transaction_errors.h"
 
 typedef struct {
     uint8_t ipfs_length;  /// ipfs length (1 byte)

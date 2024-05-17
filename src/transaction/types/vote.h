@@ -4,7 +4,7 @@
 
 #include "buffer.h"
 
-#include "transaction/errors.h"
+#include "transaction/transaction_errors.h"
 
 #define MAX_NUM_VOTES       53
 #define MIN_USERNAME_LENGTH 1

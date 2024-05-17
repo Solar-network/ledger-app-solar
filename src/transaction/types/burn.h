@@ -2,7 +2,7 @@
 
 #include "buffer.h"
 
-#include "transaction/errors.h"
+#include "transaction/transaction_errors.h"
 
 typedef struct {
     uint64_t amount;  /// amount (8 bytes)
