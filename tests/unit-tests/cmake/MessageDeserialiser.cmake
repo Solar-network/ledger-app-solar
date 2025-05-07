@@ -1,5 +1,5 @@
 ################################################################################
-# Moldule Description                                                          #
+# Module Description                                                           #
 ################################################################################
 
 project(MessageDeserialiser
@@ -8,7 +8,7 @@ project(MessageDeserialiser
   LANGUAGES C)
 
 ################################################################################
-# Moldule Source Files                                                         #
+# Module Source Files                                                          #
 ################################################################################
 
 set(LEDGER_LIB_STANDARD_SRC
@@ -27,7 +27,7 @@ set(SOLAR_MESSAGE_DESERIALISER_SRC
 add_library(message_deserialiser "${LEDGER_LIB_STANDARD_SRC}" "${SOLAR_MESSAGE_DESERIALISER_SRC}")
 
 ################################################################################
-# Moldule Include Directories                                                  #
+# Module Include Directories                                                   #
 ################################################################################
 
 target_include_directories(message_deserialiser PUBLIC

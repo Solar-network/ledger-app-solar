@@ -1,5 +1,5 @@
 ################################################################################
-# Moldule Description                                                          #
+# Module Description                                                           #
 ################################################################################
 
 project(TransactionDeserialiser
@@ -8,7 +8,7 @@ project(TransactionDeserialiser
   LANGUAGES C)
 
 ################################################################################
-# Moldule Source Files                                                         #
+# Module Source Files                                                          #
 ################################################################################
 
 set(LEDGER_LIB_STANDARD_SRC
