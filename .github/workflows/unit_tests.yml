@@ -45,7 +45,9 @@ jobs:
           path: tests/unit-tests/coverage
 
       - name: Install codecov dependencies
-        run: apk update && apk add curl gpg
+        run: |
+          apt-get update
+          apt-get install -y curl gnupg
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
